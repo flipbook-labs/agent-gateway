@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: CompeyDev/setup-rokit@1d9390883f7ebce19d48f5b8d006e11d387c92ab # v0.2.1
+        with:
+          version: v1.2.0
+
+      - name: Install packages
+        run: lute run install
+
+      - name: Lint
+        run: lute run lint
+
+      - name: Get model file name
+        run: |
+          name=$(jq -r .name default.project.json)
+          sha=${GITHUB_SHA:0:7}
+          echo "MODEL_FILE=$name-$sha.rbxm" >> $GITHUB_ENV
+
+      - name: Build
+        run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.MODEL_FILE }}
+          path: ${{ env.MODEL_FILE }}
+
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: CompeyDev/setup-rokit@1d9390883f7ebce19d48f5b8d006e11d387c92ab # v0.2.1
+        with:
+          version: v1.2.0
+
+      - name: Setup Lute typedefs
+        run: lute setup
+
+      - name: Install packages
+        run: lute run install
+
+      - name: Create prod build to be analyzed
+        run: lute run build --channel prod
+
+      - name: Run Luau analysis
+        run: lute run analyze --include-build
+
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: CompeyDev/setup-rokit@1d9390883f7ebce19d48f5b8d006e11d387c92ab # v0.2.1
+        with:
+          version: v1.2.0
+
+      - name: Install packages
+        run: lute run install
+
+      - name: Run tests
+        run: lute run test
+        env:
+          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
