@@ -6,7 +6,7 @@ type Manifest = types.Manifest
 type SurfaceName = types.SurfaceName
 
 type Registry = {
-	dispatch: (name: string, params: any?, surface: SurfaceName?) -> ActionResult,
+	dispatch: (name: string, params: unknown?, surface: SurfaceName?) -> ActionResult,
 	manifest: (surface: SurfaceName?) -> Manifest,
 }
 
@@ -20,25 +20,26 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 
 	local gateway = Instance.new("BindableFunction")
 	gateway.Name = config.name
-	gateway:SetAttribute("ProtocolVersion", config.protocolVersion);
+	gateway:SetAttribute("ProtocolVersion", config.protocolVersion)
 
-	-- BindableFunction.OnInvoke is typed as `(...any) -> ...any` in Roblox's Luau
-	-- definitions, so a cast is required to assign a function with an explicit return type.
-	(gateway :: any).OnInvoke = function(request: any): ActionResult
+	gateway.OnInvoke = function(request: unknown): ActionResult
 		if type(request) ~= "table" then
 			return { ok = false, error = "malformed request: expected a table" }
 		end
 
-		local method = request.method
+		-- The request crosses a BindableFunction boundary, so its shape is
+		-- untrusted. Treat it as a bag of unknown fields and narrow each one.
+		local fields = request :: { [string]: unknown }
+		local method = fields.method
 
 		if method == "list" then
 			return { ok = true, result = registry.manifest("agent") }
 		elseif method == "call" then
-			local action = request.action
+			local action = fields.action
 			if type(action) ~= "string" then
 				return { ok = false, error = "malformed request: action must be a string" }
 			end
-			return registry.dispatch(action, request.params, "agent")
+			return registry.dispatch(action, fields.params, "agent")
 		else
 			return { ok = false, error = `malformed request: unknown method "{tostring(method)}"` }
 		end
