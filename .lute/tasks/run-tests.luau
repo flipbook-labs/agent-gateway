@@ -1,0 +1,23 @@
+--!nocheck
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Jest = (require :: any)(ReplicatedStorage.Packages.Jest)
+
+local root = ReplicatedStorage.Packages.PluginAgents
+
+local status, result = Jest.runCLI(root, {
+	verbose = false,
+	ci = false,
+	-- selene: allow(global_usage)
+	testPathPattern = _G.__JEST_TEST_PATH_PATTERN__,
+}, { root }):awaitStatus()
+
+if status == "Rejected" then
+	print(result)
+end
+
+if status ~= "Resolved" or result.results.numFailedTestSuites > 0 or result.results.numFailedTests > 0 then
+	error(1)
+end
+
+return nil

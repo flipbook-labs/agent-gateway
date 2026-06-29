@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  pull_request:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: CompeyDev/setup-rokit@v0.1.2
+        with:
+          version: v1.1.1
+
+      - name: Get model file name
+        run: |
+          name=$(jq -r .name default.project.json)
+          echo "MODEL_FILE=$name.rbxm" >> $GITHUB_ENV
+
+      - name: Install packages
+        run: lute run install
+
+      - name: Build
+        run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
+
+      - name: Login to Wally registry
+        run: wally login --token ${{ secrets.WALLY_REGISTRY_TOKEN }}
+
+      - name: Publish to Wally
+        if: ${{ github.event.release }}
+        run: wally publish
+
+      - uses: softprops/action-gh-release@v1
+        if: ${{ github.event.release }}
+        with:
+          files: ${{ env.MODEL_FILE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

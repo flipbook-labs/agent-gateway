@@ -1,0 +1,6 @@
+{
+  "name": "plugin-agents",
+  "tree": {
+    "$path": "dist"
+  }
+}
