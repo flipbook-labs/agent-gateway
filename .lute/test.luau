@@ -27,7 +27,7 @@ args:add("filter", "option", {
 args:parse({ ... })
 
 local apiKey = process.env.ROBLOX_API_KEY or args:get("apiKey")
-if not apiKey then
+if not apiKey or apiKey == "" then
 	print(
 		"err: A valid Open Cloud API key must be supplied with either the --apiKey flag or the ROBLOX_API_KEY environment variable"
 	)
