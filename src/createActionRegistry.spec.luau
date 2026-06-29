@@ -19,7 +19,7 @@ local defaultContext: Context = {
 	value = "ctx",
 }
 
-local function makeAction(name: string, run: ((ctx: Context, params: any?) -> any)?)
+local function makeAction(name: string, run: ((ctx: Context, params: unknown?) -> unknown)?)
 	return {
 		name = name,
 		title = name,
@@ -27,7 +27,7 @@ local function makeAction(name: string, run: ((ctx: Context, params: any?) -> an
 		inputSchema = nil,
 		surfaces = nil,
 		iconName = nil,
-		run = run or function(_ctx: Context, _params: any?): any
+		run = run or function(_ctx: Context, _params: unknown?): unknown
 			return nil
 		end,
 	}
@@ -36,10 +36,10 @@ end
 describe("createActionRegistry", function()
 	describe("dispatch", function()
 		it("passes context and params to the action", function()
-			local captured: { ctx: Context?, params: any? } = {}
+			local captured: { ctx: Context?, params: unknown? } = {}
 
 			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				makeAction("greet", function(ctx, params): any
+				makeAction("greet", function(ctx, params): unknown
 					captured.ctx = ctx
 					captured.params = params
 					return "hello"
@@ -56,8 +56,8 @@ describe("createActionRegistry", function()
 
 		it("returns ok=true with the action return value on success", function()
 			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				makeAction("add", function(_ctx, params): any
-					return params.a + params.b
+				makeAction("add", function(_ctx, params): unknown
+					return (params :: { a: number, b: number }).a + (params :: { a: number, b: number }).b
 				end),
 			})
 
@@ -69,7 +69,7 @@ describe("createActionRegistry", function()
 
 		it("returns ok=false with error string when the action throws", function()
 			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				makeAction("boom", function(): any
+				makeAction("boom", function(): unknown
 					error("something went wrong")
 				end),
 			})
@@ -99,7 +99,7 @@ describe("createActionRegistry", function()
 					inputSchema = nil,
 					iconName = nil,
 					surfaces = { plugin = true },
-					run = function(): any
+					run = function(): unknown
 						return "ok"
 					end,
 				},
@@ -155,30 +155,33 @@ describe("createActionRegistry", function()
 		end)
 
 		it("filters actions by surface", function()
+			local agentOnly = {
+				name = "agentOnly",
+				title = "Agent Only",
+				description = "Only for agents",
+				inputSchema = nil,
+				iconName = nil,
+				surfaces = { agent = true },
+				run = function(): unknown
+					return nil
+				end,
+			}
+			local pluginOnly = {
+				name = "pluginOnly",
+				title = "Plugin Only",
+				description = "Only for plugins",
+				inputSchema = nil,
+				iconName = nil,
+				surfaces = { plugin = true },
+				run = function(): unknown
+					return nil
+				end,
+			}
+
 			local registry = createActionRegistry(defaultConfig, defaultContext, {
 				makeAction("forAll"),
-				{
-					name = "agentOnly",
-					title = "Agent Only",
-					description = "Only for agents",
-					inputSchema = nil,
-					iconName = nil,
-					surfaces = { agent = true },
-					run = function(): any
-						return nil
-					end,
-				},
-				{
-					name = "pluginOnly",
-					title = "Plugin Only",
-					description = "Only for plugins",
-					inputSchema = nil,
-					iconName = nil,
-					surfaces = { plugin = true },
-					run = function(): any
-						return nil
-					end,
-				},
+				agentOnly,
+				pluginOnly,
 			})
 
 			local agentManifest = registry.manifest("agent")
@@ -210,7 +213,7 @@ describe("createActionRegistry", function()
 					inputSchema = schema,
 					iconName = nil,
 					surfaces = { agent = true },
-					run = function(): any
+					run = function(): unknown
 						return nil
 					end,
 				},

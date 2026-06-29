@@ -10,7 +10,7 @@ type Surfaces = types.Surfaces
 
 type ActionRegistry<Context> = {
 	actions: { Action<Context> },
-	dispatch: (name: string, params: any?, surface: SurfaceName?) -> ActionResult,
+	dispatch: (name: string, params: unknown?, surface: SurfaceName?) -> ActionResult,
 	manifest: (surface: SurfaceName?) -> Manifest,
 }
 
@@ -49,7 +49,7 @@ local function createActionRegistry<Context>(
 		actionMap[action.name] = action
 	end
 
-	local function dispatch(name: string, params: any?, surface: SurfaceName?): ActionResult
+	local function dispatch(name: string, params: unknown?, surface: SurfaceName?): ActionResult
 		local action = actionMap[name]
 		if action == nil then
 			return { ok = false, error = `unknown action: {name}` }

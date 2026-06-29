@@ -6,7 +6,7 @@ type Manifest = types.Manifest
 type SurfaceName = types.SurfaceName
 
 type Registry = {
-	dispatch: (name: string, params: any?, surface: SurfaceName?) -> ActionResult,
+	dispatch: (name: string, params: unknown?, surface: SurfaceName?) -> ActionResult,
 	manifest: (surface: SurfaceName?) -> Manifest,
 }
 
@@ -20,11 +20,9 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 
 	local gateway = Instance.new("BindableFunction")
 	gateway.Name = config.name
-	gateway:SetAttribute("ProtocolVersion", config.protocolVersion);
+	gateway:SetAttribute("ProtocolVersion", config.protocolVersion)
 
-	-- BindableFunction.OnInvoke is typed as `(...any) -> ...any` in Roblox's Luau
-	-- definitions, so a cast is required to assign a function with an explicit return type.
-	(gateway :: any).OnInvoke = function(request: any): ActionResult
+	gateway.OnInvoke = function(request)
 		if type(request) ~= "table" then
 			return { ok = false, error = "malformed request: expected a table" }
 		end

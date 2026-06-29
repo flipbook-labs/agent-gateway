@@ -2,6 +2,7 @@ local JestGlobals = require("@pkg/JestGlobals")
 
 local createActionRegistry = require("@root/createActionRegistry")
 local createGateway = require("@root/createGateway")
+local types = require("@root/types")
 
 local afterEach = JestGlobals.afterEach
 local describe = JestGlobals.describe
@@ -9,12 +10,13 @@ local expect = JestGlobals.expect
 local it = JestGlobals.it
 
 type Context = {}
+type Action = types.Action<Context>
 
-local function makeRegistry(actions: { any }?)
+local function makeRegistry(actions: { Action }?)
 	return createActionRegistry({ name = "TestGateway", protocolVersion = 1 }, {} :: Context, actions or {})
 end
 
-local function invoke(parent: Instance, name: string, request: any): any
+local function invoke(parent: Instance, name: string, request: unknown): unknown
 	local bf = parent:FindFirstChild(name) :: BindableFunction
 	return bf:Invoke(request)
 end
@@ -33,21 +35,13 @@ describe("createGateway", function()
 		end
 	end)
 
-	local function setup(actions: { any }?, configOverrides: { [string]: any }?)
+	local function setup(actions: { Action }?)
 		parent = Instance.new("Folder")
-		local registry = makeRegistry(actions)
-		local config = {
+		cleanup = createGateway(makeRegistry(actions), {
 			name = "TestGateway",
 			protocolVersion = 1,
 			parent = parent,
-		}
-		if configOverrides then
-			for k, v in configOverrides do
-				(config :: any)[k] = v
-			end
-		end
-		cleanup = createGateway(registry, config)
-		return registry
+		})
 	end
 
 	it("publishes a BindableFunction under the configured parent", function()
@@ -59,85 +53,89 @@ describe("createGateway", function()
 	end)
 
 	it("sets the ProtocolVersion attribute", function()
-		setup(nil, { protocolVersion = 7 })
+		parent = Instance.new("Folder")
+		cleanup = createGateway(makeRegistry(), {
+			name = "TestGateway",
+			protocolVersion = 7,
+			parent = parent,
+		})
 
 		local bf = parent:FindFirstChild("TestGateway") :: Instance
 		expect(bf:GetAttribute("ProtocolVersion")).toBe(7)
 	end)
 
 	it("list returns only agent-visible actions", function()
-		setup({
-			{
-				name = "forAgents",
-				title = "For Agents",
-				description = "Visible to agents",
-				inputSchema = nil,
-				iconName = nil,
-				surfaces = { agent = true },
-				run = function(): any
-					return nil
-				end,
-			},
-			{
-				name = "pluginOnly",
-				title = "Plugin Only",
-				description = "Not for agents",
-				inputSchema = nil,
-				iconName = nil,
-				surfaces = { plugin = true },
-				run = function(): any
-					return nil
-				end,
-			} :: any,
-		})
+		local forAgents: Action = {
+			name = "forAgents",
+			title = "For Agents",
+			description = "Visible to agents",
+			inputSchema = nil,
+			iconName = nil,
+			surfaces = { agent = true },
+			run = function(): unknown
+				return nil
+			end,
+		}
+		local pluginOnly: Action = {
+			name = "pluginOnly",
+			title = "Plugin Only",
+			description = "Not for agents",
+			inputSchema = nil,
+			iconName = nil,
+			surfaces = { plugin = true },
+			run = function(): unknown
+				return nil
+			end,
+		}
+		setup({ forAgents, pluginOnly })
 
 		local result = invoke(parent, "TestGateway", { method = "list" })
 
-		expect(result.ok).toBe(true)
-		expect(#result.result.actions).toBe(1)
-		expect(result.result.actions[1].name).toBe("forAgents")
+		expect((result :: { ok: boolean, result: { actions: { { name: string } } } }).ok).toBe(true)
+		expect(#(result :: { ok: boolean, result: { actions: { { name: string } } } }).result.actions).toBe(1)
+		expect((result :: { ok: boolean, result: { actions: { { name: string } } } }).result.actions[1].name).toBe(
+			"forAgents"
+		)
 	end)
 
 	it("call dispatches an agent-visible action", function()
-		setup({
-			{
-				name = "ping",
-				title = "Ping",
-				description = "Returns pong",
-				inputSchema = nil,
-				iconName = nil,
-				surfaces = nil,
-				run = function(): any
-					return "pong"
-				end,
-			},
-		})
+		local ping: Action = {
+			name = "ping",
+			title = "Ping",
+			description = "Returns pong",
+			inputSchema = nil,
+			iconName = nil,
+			surfaces = nil,
+			run = function(): unknown
+				return "pong"
+			end,
+		}
+		setup({ ping })
 
 		local result = invoke(parent, "TestGateway", { method = "call", action = "ping" })
 
-		expect(result.ok).toBe(true)
-		expect(result.result).toBe("pong")
+		expect((result :: { ok: boolean, result: unknown }).ok).toBe(true)
+		expect((result :: { ok: boolean, result: unknown }).result).toBe("pong")
 	end)
 
 	it("call rejects non-agent actions", function()
-		setup({
-			{
-				name = "pluginOnly",
-				title = "Plugin Only",
-				description = "Not for agents",
-				inputSchema = nil,
-				iconName = nil,
-				surfaces = { plugin = true },
-				run = function(): any
-					return "should not reach"
-				end,
-			},
-		})
+		local pluginOnly: Action = {
+			name = "pluginOnly",
+			title = "Plugin Only",
+			description = "Not for agents",
+			inputSchema = nil,
+			iconName = nil,
+			surfaces = { plugin = true },
+			run = function(): unknown
+				return "should not reach"
+			end,
+		}
+		setup({ pluginOnly })
 
 		local result = invoke(parent, "TestGateway", { method = "call", action = "pluginOnly" })
 
-		expect(result.ok).toBe(false)
-		expect(result.error).toBe("unknown action: pluginOnly")
+		expect((result :: { ok: boolean, error: string }).ok).toBe(false)
+		expect((result :: { ok: boolean, error: string }).error).toBe("unknown action: pluginOnly")
 	end)
 
 	it("returns an error for a non-table request", function()
@@ -145,8 +143,8 @@ describe("createGateway", function()
 
 		local result = invoke(parent, "TestGateway", "not a table")
 
-		expect(result.ok).toBe(false)
-		expect(result.error).toContain("malformed request")
+		expect((result :: { ok: boolean, error: string }).ok).toBe(false)
+		expect((result :: { ok: boolean, error: string }).error).toContain("malformed request")
 	end)
 
 	it("returns an error for an unknown method", function()
@@ -154,8 +152,8 @@ describe("createGateway", function()
 
 		local result = invoke(parent, "TestGateway", { method = "execute" })
 
-		expect(result.ok).toBe(false)
-		expect(result.error).toContain("malformed request")
+		expect((result :: { ok: boolean, error: string }).ok).toBe(false)
+		expect((result :: { ok: boolean, error: string }).error).toContain("malformed request")
 	end)
 
 	it("returns an error for call without an action name", function()
@@ -163,8 +161,8 @@ describe("createGateway", function()
 
 		local result = invoke(parent, "TestGateway", { method = "call" })
 
-		expect(result.ok).toBe(false)
-		expect(result.error).toContain("malformed request")
+		expect((result :: { ok: boolean, error: string }).ok).toBe(false)
+		expect((result :: { ok: boolean, error: string }).error).toContain("malformed request")
 	end)
 
 	it("is idempotent: replaces an existing gateway with the same name", function()

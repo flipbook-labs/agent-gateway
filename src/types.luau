@@ -7,9 +7,9 @@ export type Surfaces = {
 
 export type InputSchema = {
 	type: string,
-	properties: { [string]: any }?,
+	properties: { [string]: unknown }?,
 	required: { string }?,
-	[string]: any,
+	[string]: unknown,
 }
 
 export type Action<Context> = {
@@ -19,7 +19,7 @@ export type Action<Context> = {
 	inputSchema: InputSchema?,
 	surfaces: Surfaces?,
 	iconName: string?,
-	run: (context: Context, params: any?) -> any,
+	run: (context: Context, params: unknown?) -> unknown,
 }
 
 -- iconName is intentionally excluded: it is a plugin-UI concern and is not
@@ -39,7 +39,7 @@ export type Manifest = {
 
 export type ActionResult = {
 	ok: boolean,
-	result: any?,
+	result: unknown?,
 	error: string?,
 }
 
@@ -52,7 +52,7 @@ export type Config = {
 export type GatewayRequest = {
 	method: "list" | "call",
 	action: string?,
-	params: any?,
+	params: unknown?,
 }
 
 return {}
