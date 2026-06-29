@@ -10,7 +10,6 @@ include = [
 	"dist",
 	"dist/**",
 	"default.project.json",
-	"CHANGELOG.md",
 	"LICENSE",
 	"README.md",
 	"wally.toml",
