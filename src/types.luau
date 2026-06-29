@@ -1,4 +1,4 @@
-export type SurfaceName = "agent" | "plugin"
+export type Surface = "agent" | "plugin"
 
 export type Surfaces = {
 	agent: boolean?,

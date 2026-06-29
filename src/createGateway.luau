@@ -1,13 +1,14 @@
+local Surface = require("@root/Surface")
 local types = require("@root/types")
 
 type ActionResult = types.ActionResult
 type Config = types.Config
 type Manifest = types.Manifest
-type SurfaceName = types.SurfaceName
+type Surface = types.Surface
 
 type Registry = {
-	dispatch: (name: string, params: unknown?, surface: SurfaceName?) -> ActionResult,
-	manifest: (surface: SurfaceName?) -> Manifest,
+	dispatch: (name: string, params: unknown?, surface: Surface?) -> ActionResult,
+	manifest: (surface: Surface?) -> Manifest,
 }
 
 local function createGateway(registry: Registry, config: Config): () -> ()
@@ -24,24 +25,35 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 
 	gateway.OnInvoke = function(request: unknown): ActionResult
 		if type(request) ~= "table" then
-			return { ok = false, error = "malformed request: expected a table" }
+			return {
+				ok = false,
+				error = "malformed request: expected a table",
+			}
 		end
 
 		-- The request crosses a BindableFunction boundary, so its shape is
 		-- untrusted. Treat it as a bag of unknown fields and narrow each one.
 		local fields = request :: { [string]: unknown }
-		local method = fields.method
 
-		if method == "list" then
-			return { ok = true, result = registry.manifest("agent") }
-		elseif method == "call" then
+		if fields.method == "list" then
+			return {
+				ok = true,
+				result = registry.manifest(Surface.Agent),
+			}
+		elseif fields.method == "call" then
 			local action = fields.action
 			if type(action) ~= "string" then
-				return { ok = false, error = "malformed request: action must be a string" }
+				return {
+					ok = false,
+					error = "malformed request: action must be a string",
+				}
 			end
-			return registry.dispatch(action, fields.params, "agent")
+			return registry.dispatch(action, fields.params, Surface.Agent)
 		else
-			return { ok = false, error = `malformed request: unknown method "{tostring(method)}"` }
+			return {
+				ok = false,
+				error = `malformed request: unknown method "{tostring(fields.method)}"`,
+			}
 		end
 	end
 

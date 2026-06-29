@@ -5,16 +5,16 @@ type ActionResult = types.ActionResult
 type Config = types.Config
 type Manifest = types.Manifest
 type ManifestEntry = types.ManifestEntry
-type SurfaceName = types.SurfaceName
+type Surface = types.Surface
 type Surfaces = types.Surfaces
 
 type ActionRegistry<Context> = {
 	actions: { Action<Context> },
-	dispatch: (name: string, params: unknown?, surface: SurfaceName?) -> ActionResult,
-	manifest: (surface: SurfaceName?) -> Manifest,
+	dispatch: (name: string, params: unknown?, surface: Surface?) -> ActionResult,
+	manifest: (surface: Surface?) -> Manifest,
 }
 
-local function isVisibleToSurface(surfaces: Surfaces?, surface: SurfaceName?): boolean
+local function isVisibleToSurface(surfaces: Surfaces?, surface: Surface?): boolean
 	if surface == nil then
 		return true
 	end
@@ -49,25 +49,37 @@ local function createActionRegistry<Context>(
 		actionMap[action.name] = action
 	end
 
-	local function dispatch(name: string, params: unknown?, surface: SurfaceName?): ActionResult
+	local function dispatch(name: string, params: unknown?, surface: Surface?): ActionResult
 		local action = actionMap[name]
 		if action == nil then
-			return { ok = false, error = `unknown action: {name}` }
+			return {
+				ok = false,
+				error = `unknown action: {name}`,
+			}
 		end
 
 		if surface ~= nil and not isVisibleToSurface(action.surfaces, surface) then
-			return { ok = false, error = `unknown action: {name}` }
+			return {
+				ok = false,
+				error = `unknown action: {name}`,
+			}
 		end
 
 		local ok, value = pcall(action.run, context, params)
 		if ok then
-			return { ok = true, result = value }
+			return {
+				ok = true,
+				result = value,
+			}
 		else
-			return { ok = false, error = tostring(value) }
+			return {
+				ok = false,
+				error = tostring(value),
+			}
 		end
 	end
 
-	local function manifest(surface: SurfaceName?): Manifest
+	local function manifest(surface: Surface?): Manifest
 		local entries: { ManifestEntry } = {}
 
 		for _, action in snapshot do
