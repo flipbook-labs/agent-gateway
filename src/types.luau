@@ -22,6 +22,8 @@ export type Action<Context> = {
 	run: (context: Context, params: any?) -> any,
 }
 
+-- iconName is intentionally excluded: it is a plugin-UI concern and is not
+-- surfaced to agents via the manifest.
 export type ManifestEntry = {
 	name: string,
 	title: string,

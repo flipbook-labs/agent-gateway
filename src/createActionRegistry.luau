@@ -29,9 +29,12 @@ local function createActionRegistry<Context>(
 	context: Context,
 	actions: { Action<Context> }
 ): ActionRegistry<Context>
-	local nameSet: { [string]: boolean } = {}
+	-- Snapshot the caller's array so manifest and dispatch always agree,
+	-- even if the caller mutates the original table after construction.
+	local snapshot: { Action<Context> } = table.move(actions, 1, #actions, 1, {})
 
-	for _, action in actions do
+	local nameSet: { [string]: boolean } = {}
+	for _, action in snapshot do
 		if action.name == "" then
 			error("action name must not be empty")
 		end
@@ -42,7 +45,7 @@ local function createActionRegistry<Context>(
 	end
 
 	local actionMap: { [string]: Action<Context> } = {}
-	for _, action in actions do
+	for _, action in snapshot do
 		actionMap[action.name] = action
 	end
 
@@ -67,7 +70,7 @@ local function createActionRegistry<Context>(
 	local function manifest(surface: SurfaceName?): Manifest
 		local entries: { ManifestEntry } = {}
 
-		for _, action in actions do
+		for _, action in snapshot do
 			if isVisibleToSurface(action.surfaces, surface) then
 				table.insert(entries, {
 					name = action.name,
@@ -86,7 +89,7 @@ local function createActionRegistry<Context>(
 	end
 
 	return {
-		actions = actions,
+		actions = snapshot,
 		dispatch = dispatch,
 		manifest = manifest,
 	}
