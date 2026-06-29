@@ -22,13 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 
-      - uses: CompeyDev/setup-rokit@v0.1.2
+      - uses: CompeyDev/setup-rokit@v0.2.1
         with:
-          version: v1.1.1
+          version: v1.2.0
 
       - name: Get model file name
         run: |

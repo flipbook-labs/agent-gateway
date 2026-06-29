@@ -10,11 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.0
 
-      - uses: CompeyDev/setup-rokit@v0.1.2
+      - uses: CompeyDev/setup-rokit@v0.2.1
         with:
-          version: v1.1.1
+          version: v1.2.0
 
       - name: Install packages
         run: lute run install
@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ env.MODEL_FILE }}
           path: ${{ env.MODEL_FILE }}
@@ -39,11 +39,11 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.0
 
-      - uses: CompeyDev/setup-rokit@v0.1.2
+      - uses: CompeyDev/setup-rokit@v0.2.1
         with:
-          version: v1.1.1
+          version: v1.2.0
 
       - name: Setup Lute typedefs
         run: lute setup
@@ -61,11 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.0
 
-      - uses: CompeyDev/setup-rokit@v0.1.2
+      - uses: CompeyDev/setup-rokit@v0.2.1
         with:
-          version: v1.1.1
+          version: v1.2.0
 
       - name: Install packages
         run: lute run install
