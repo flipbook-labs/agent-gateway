@@ -21,6 +21,11 @@ This repository is in early setup. The initial package will provide:
 PluginAgents = "flipbook-labs/plugin-agents@x.x.x"
 ```
 
+## Releases
+
+Releases are managed by [Changewrite](https://github.com/flipbook-labs/changewrite)
+using [`changewrite.toml`](changewrite.toml) and [`cliff.toml`](cliff.toml).
+
 ## License
 
 The contents of this repository are available under the MIT License. For full
