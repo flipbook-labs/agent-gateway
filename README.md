@@ -1,4 +1,4 @@
-# Plugin Agents
+# PluginAgents
 
 [![CI](https://github.com/flipbook-labs/plugin-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/flipbook-labs/plugin-agents/actions/workflows/ci.yml)
 
