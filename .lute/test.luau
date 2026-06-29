@@ -53,7 +53,7 @@ end
 local success, err = pcall(function()
 	local testRunnerPath = createTestRunnerScript()
 
-	return run("rocale", {
+	return run("rocale-cli", {
 		"run",
 		"--script",
 		testRunnerPath,
