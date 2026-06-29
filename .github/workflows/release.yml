@@ -22,11 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: CompeyDev/setup-rokit@v0.2.1
+      # CompeyDev/setup-rokit v0.2.1
+      - uses: CompeyDev/setup-rokit@1d9390883f7ebce19d48f5b8d006e11d387c92ab
         with:
           version: v1.2.0
 
@@ -42,7 +43,7 @@ jobs:
         run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
 
       - id: changewrite
-        uses: flipbook-labs/changewrite@main
+        uses: flipbook-labs/changewrite@v0.3.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           force-publish: ${{ inputs.force_publish || false }}
