@@ -10,12 +10,11 @@ export type Action<Context> = {
 	title: string,
 	description: string,
 	inputSchema: InputSchema?,
-	iconName: string?,
 	run: (context: Context, params: unknown?) -> unknown,
 }
 
--- iconName is intentionally excluded: it is a plugin-UI concern and is not
--- exposed to agents via the manifest.
+-- ManifestEntry is the serializable subset of Action sent across the gateway
+-- boundary: everything except the run function.
 export type ManifestEntry = {
 	name: string,
 	title: string,

@@ -25,7 +25,6 @@ local function makeAction(name: string, run: ((ctx: Context, params: any?) -> an
 		title = name,
 		description = `Action {name}`,
 		inputSchema = nil,
-		iconName = nil,
 		run = run or function(_ctx: Context, _params: any?): any
 			return nil
 		end,
@@ -142,7 +141,6 @@ describe("createActionRegistry", function()
 					title = "My Action",
 					description = "Does something",
 					inputSchema = schema,
-					iconName = nil,
 					run = function(): any
 						return nil
 					end,

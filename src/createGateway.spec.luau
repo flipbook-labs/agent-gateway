@@ -72,7 +72,6 @@ describe("createGateway", function()
 				title = "First",
 				description = "An action",
 				inputSchema = nil,
-				iconName = nil,
 				run = function(): any
 					return nil
 				end,
@@ -82,7 +81,6 @@ describe("createGateway", function()
 				title = "Second",
 				description = "Another action",
 				inputSchema = nil,
-				iconName = nil,
 				run = function(): any
 					return nil
 				end,
@@ -102,7 +100,6 @@ describe("createGateway", function()
 				title = "Ping",
 				description = "Returns pong",
 				inputSchema = nil,
-				iconName = nil,
 				run = function(): any
 					return "pong"
 				end,
