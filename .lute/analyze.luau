@@ -57,9 +57,20 @@ local function analyzeRobloxSource()
 	})
 
 	if args:has("include-build") then
+		-- The build output uses converted (Roblox-style) requires, so it needs a
+		-- sourcemap that maps the package instance to the build tree rather than
+		-- to src. Without this, luau-lsp reports "unsupported path" for every
+		-- cross-module require in the build.
+		run("rojo", {
+			"sourcemap",
+			project.ROJO_DEFAULT_PROJECT,
+			"-o",
+			project.BUILD_SOURCEMAP_PATH,
+		})
+
 		run("luau-lsp", {
 			"analyze",
-			`--sourcemap={project.SOURCEMAP_PATH}`,
+			`--sourcemap={project.BUILD_SOURCEMAP_PATH}`,
 			`--defs={globalDefsPath}`,
 			`--ignore="**/_Index/**"`,
 			project.BUILD_PATH,
