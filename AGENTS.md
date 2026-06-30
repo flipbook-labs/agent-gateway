@@ -33,6 +33,9 @@ registers a few actions and stands up that gateway. The end-to-end test is:
     exposes a tool that runs Luau in the open place and returns the result), or
   - the Studio **Command Bar** (View → Command Bar), for running snippets by hand.
 
+  (Last resort, if the MCP can't be attached to your client: drive the
+  `StudioMCP` stdio binary directly with an `execute_luau` call.)
+
 ## 1. Bootstrap the toolchain
 
 From the repo root:
