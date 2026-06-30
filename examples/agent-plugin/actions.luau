@@ -64,6 +64,21 @@ local function asTable(params: unknown?): { [string]: unknown }
 	return {}
 end
 
+-- Build the slash-separated path that `resolvePath` understands (e.g.
+-- "Workspace/Model/Part"). Unlike `Instance:GetFullName()`, which uses dots and
+-- cannot be fed back into actions that resolve by path.
+local function pathOf(instance: Instance): string
+	local segments = {}
+	local current: Instance? = instance
+
+	while current ~= nil and current ~= game do
+		table.insert(segments, 1, current.Name)
+		current = current.Parent
+	end
+
+	return table.concat(segments, "/")
+end
+
 local function create(_context: Context): { Action }
 	return {
 		{
@@ -86,7 +101,7 @@ local function create(_context: Context): { Action }
 				part.Anchored = true
 				part.Parent = Workspace
 
-				return { name = part.Name, path = part:GetFullName() }
+				return { name = part.Name, path = pathOf(part) }
 			end,
 		},
 
@@ -122,7 +137,7 @@ local function create(_context: Context): { Action }
 					table.insert(children, { name = child.Name, className = child.ClassName })
 				end
 
-				return { path = target:GetFullName(), children = children }
+				return { path = pathOf(target), children = children }
 			end,
 		},
 
@@ -159,7 +174,7 @@ local function create(_context: Context): { Action }
 				local previous = target.Name
 				target.Name = name
 
-				return { previous = previous, name = target.Name, path = target:GetFullName() }
+				return { previous = previous, name = target.Name, path = pathOf(target) }
 			end,
 		},
 
