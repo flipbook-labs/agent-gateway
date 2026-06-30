@@ -52,21 +52,30 @@ lute run build-example
 ```
 
 This first builds the PluginAgents source into `dist/`, then builds the example
-into `AgentPlugin.rbxm` at the repo root. (`lute run build-example --help` lists
-the `--channel` / `--output` flags.)
+into `AgentPlugin.rbxm` at the repo root. The task accepts two optional flags:
+`--channel dev|prod` (default `dev`) and `--output <path>` (default
+`AgentPlugin.rbxm`).
 
 The built model is a single `Script` named `AgentPlugin` with the PluginAgents
 library nested inside it, so it is fully self-contained.
 
+> **Steps 3–6 require Roblox Studio.** If you only need to confirm the package
+> builds, stop here — steps 1–2 above are the full headless path.
+
 ## 3. Install the plugin into Studio
 
-Install `AgentPlugin.rbxm` as a local plugin:
+Install `AgentPlugin.rbxm` as a local plugin by copying it into Studio's plugins
+folder:
 
-- **macOS:** copy it into `~/Documents/Roblox/Plugins/`
-- **Windows:** copy it into `%LOCALAPPDATA%\Roblox\Plugins\`
+- **macOS:** `~/Documents/Roblox/Plugins/AgentPlugin.rbxm`
+- **Windows:** `%LOCALAPPDATA%\Roblox\Plugins\AgentPlugin.rbxm`
 
-(Alternatively, `rojo build example.project.json -o "<plugins-dir>/AgentPlugin.rbxm"`
-writes it straight into the plugins folder.)
+Alternatively, build it straight into the plugins folder by passing that path as
+the output, e.g. on macOS:
+
+```sh
+rojo build example.project.json -o ~/Documents/Roblox/Plugins/AgentPlugin.rbxm
+```
 
 Then open Roblox Studio with any place (a Baseplate is fine). On load you should
 see this in the Output window:
