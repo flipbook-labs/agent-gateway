@@ -1,5 +1,6 @@
 local FlipbookBatteries = require("@luaupkg/FlipbookBatteries@v0.10.1")
 local cli = require("@batteries/cli")
+local fs = require("@std/fs")
 local path = require("@std/path")
 local system = require("@std/system")
 
@@ -66,5 +67,33 @@ local function analyzeRobloxSource()
 	end
 end
 
+-- The example plugin consumes PluginAgents through Roblox instance requires, so it
+-- needs its own sourcemap. It bundles the built source (dist via the PluginAgents
+-- child), so this only runs once a build exists.
+local function analyzeExampleSource()
+	if not fs.exists(project.BUILD_PATH) then
+		print(`skipping example analysis: "{project.BUILD_PATH}" not found (run "lute run build" first)`)
+		return
+	end
+
+	run("rojo", {
+		"sourcemap",
+		project.ROJO_EXAMPLE_PROJECT,
+		"-o",
+		project.EXAMPLE_SOURCEMAP_PATH,
+	})
+
+	run("luau-lsp", {
+		"analyze",
+		`--sourcemap={project.EXAMPLE_SOURCEMAP_PATH}`,
+		`--defs={globalDefsPath}`,
+		"--settings=./.vscode/settings.json",
+		`--ignore="**/_Index/**"`,
+		`--ignore="**/jest.config.luau"`,
+		"examples",
+	})
+end
+
 analyzeLuauSource()
 analyzeRobloxSource()
+analyzeExampleSource()

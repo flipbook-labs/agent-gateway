@@ -8,16 +8,20 @@ return {
 	LUTE_SCRIPTS_PATH = ".lute",
 
 	MODEL_FILENAME = "PluginAgents.rbxm",
+	EXAMPLE_MODEL_FILENAME = "AgentPlugin.rbxm",
 
 	SOURCEMAP_PATH = "sourcemap.json",
 	DARKLUA_SOURCEMAP_PATH = "sourcemap-darklua.json",
+	EXAMPLE_SOURCEMAP_PATH = "sourcemap-example.json",
 
 	ROJO_BUILD_PROJECT = "build.project.json",
 	ROJO_TESTS_PROJECT = "tests.project.json",
+	ROJO_EXAMPLE_PROJECT = "example.project.json",
 
 	FOLDERS_TO_LINT = {
 		"src",
 		".lute",
+		"examples",
 	},
 
 	ROBLOX_UNIT_TESTING_PLACE_ID = "123506190725771",
