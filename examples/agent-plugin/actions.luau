@@ -1,11 +1,9 @@
 --[[
 	Action definitions for the example agent plugin.
 
-	Each action is an AgentGateway.Action<Context>. Actions marked
-	`surfaces = { agent = true }` show up in the agent manifest (returned by the
-	gateway's `list` method) and can be invoked by an agent. The `openWidget`
-	action is `plugin`-only to demonstrate that the gateway hides plugin-surface
-	actions from agents.
+	Each action is an AgentGateway.Action<Context>. Registered actions show up in
+	the manifest (returned by the gateway's `list` method) and can be invoked by
+	an agent.
 
 	`params` crosses the BindableFunction boundary, so it arrives as `unknown` and
 	each action narrows it defensively. Errors thrown from `run` are caught by the
@@ -37,7 +35,6 @@ local function create(_context: Context): { Action }
 					name = { type = "string", description = "Name for the new Part (default: AgentPart)" },
 				} :: { [string]: unknown },
 			},
-			surfaces = { agent = true, plugin = true },
 			run = function(_ctx, params)
 				local options = asTable(params)
 				local name = options.name
@@ -61,7 +58,6 @@ local function create(_context: Context): { Action }
 					path = { type = "string", description = 'Slash-separated path, e.g. "Workspace/Model"' },
 				} :: { [string]: unknown },
 			},
-			surfaces = { agent = true, plugin = true },
 			run = function(_ctx, params)
 				local options = asTable(params)
 				local targetPath = options.path
@@ -99,7 +95,6 @@ local function create(_context: Context): { Action }
 				} :: { [string]: unknown },
 				required = { "path", "name" },
 			},
-			surfaces = { agent = true, plugin = true },
 			run = function(_ctx, params)
 				local options = asTable(params)
 				local targetPath = options.path
@@ -121,18 +116,6 @@ local function create(_context: Context): { Action }
 				target.Name = name
 
 				return { previous = previous, name = target.Name, path = getInstancePath(target) }
-			end,
-		},
-
-		{
-			-- Plugin-surface only: proves the gateway hides this from the agent
-			-- manifest and refuses to dispatch it for the agent surface.
-			name = "openWidget",
-			title = "Open Widget",
-			description = "Plugin-only UI action; intentionally hidden from agents.",
-			surfaces = { plugin = true },
-			run = function()
-				return { opened = true }
 			end,
 		},
 	}

@@ -1,12 +1,3 @@
-local Surface = require("@root/Surface")
-
-export type Surface = Surface.Surface
-
-export type Surfaces = {
-	agent: boolean?,
-	plugin: boolean?,
-}
-
 export type InputSchema = {
 	type: string,
 	properties: { [string]: unknown }?,
@@ -19,17 +10,16 @@ export type Action<Context> = {
 	title: string,
 	description: string,
 	inputSchema: InputSchema?,
-	surfaces: Surfaces?,
-	iconName: string?,
 	run: (context: Context, params: unknown?) -> unknown,
 }
 
+-- ManifestEntry is the serializable subset of Action sent across the gateway
+-- boundary: everything except the run function.
 export type ManifestEntry = {
 	name: string,
 	title: string,
 	description: string,
 	inputSchema: InputSchema?,
-	surfaces: Surfaces?,
 }
 
 export type Manifest = {

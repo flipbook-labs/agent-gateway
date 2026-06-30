@@ -1,14 +1,12 @@
-local Surface = require("@root/Surface")
 local types = require("@root/types")
 
 type ActionResult = types.ActionResult
 type Config = types.Config
 type Manifest = types.Manifest
-type Surface = types.Surface
 
 type Registry = {
-	dispatch: (name: string, params: unknown?, surface: Surface?) -> ActionResult,
-	manifest: (surface: Surface?) -> Manifest,
+	dispatch: (name: string, params: unknown?) -> ActionResult,
+	manifest: () -> Manifest,
 }
 
 local function createGateway(registry: Registry, config: Config): () -> ()
@@ -38,7 +36,7 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 		if fields.method == "list" then
 			return {
 				ok = true,
-				result = registry.manifest(Surface.Agent),
+				result = registry.manifest(),
 			}
 		elseif fields.method == "call" then
 			local action = fields.action
@@ -48,7 +46,7 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 					error = "malformed request: action must be a string",
 				}
 			end
-			return registry.dispatch(action, fields.params, Surface.Agent)
+			return registry.dispatch(action, fields.params)
 		else
 			return {
 				ok = false,

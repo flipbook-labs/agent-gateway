@@ -15,7 +15,7 @@ AgentGateway = "flipbook-labs/agent-gateway@x.x.x"
 
 ## Usage
 
-Define your plugin's actions, register them, and stand up a gateway. Actions marked `surfaces = { agent = true }` are discoverable and invokable by in-Studio agents; everything else stays plugin-only.
+Define your plugin's actions, register them, and stand up a gateway. Registered actions are discoverable and invokable by in-Studio agents.
 
 ```lua
 local AgentGateway = require(path.to.AgentGateway)
@@ -40,7 +40,6 @@ local actions: { AgentGateway.Action<Context> } = {
 				name = { type = "string", description = "Name for the new Part" },
 			},
 		},
-		surfaces = { agent = true },
 		run = function(ctx, params)
 			local part = Instance.new("Part")
 			part.Anchored = true
@@ -61,7 +60,7 @@ An agent then talks to the gateway `BindableFunction` (parented to `CoreGui` by 
 ```lua
 local gateway = game:GetService("CoreGui").MyPluginGateway
 
--- Discover agent-visible actions
+-- Discover available actions
 gateway:Invoke({ method = "list" })
 
 -- Invoke one

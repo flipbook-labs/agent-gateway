@@ -66,7 +66,7 @@ lute run build-example --output ~/Documents/Roblox/Plugins/AgentPlugin.rbxm
 Then open Roblox Studio with any place (a Baseplate is fine). On load you should see this in the Output window:
 
 ```
-[FlipbookAgentGateway] ready — 4 action(s) registered
+[FlipbookAgentGateway] ready — 3 action(s) registered
 ```
 
 That line means the plugin ran and the gateway exists. If you don't see it, the plugin didn't load — re-check the install path and that the place is open.
@@ -84,7 +84,7 @@ You should get a `BindableFunction` and a `ProtocolVersion` of `1`. This is the 
 
 ## 5. Discover actions with `list`
 
-Invoke the gateway with the `list` method to get the manifest of agent-visible actions:
+Invoke the gateway with the `list` method to get the manifest of available actions:
 
 ```lua
 local gateway = game:GetService("CoreGui").FlipbookAgentGateway
@@ -107,8 +107,6 @@ print(response)
     },
 }
 ```
-
-Note that **`openWidget` is absent** — it is a `plugin`-surface action, so the gateway hides it from agents. That filtering is part of what you're verifying.
 
 ## 6. Call actions and decide what to do
 
@@ -136,7 +134,7 @@ From here, behave like the agent: read each `result`, pick the next action from 
 
 - **Success path:** `insertPart` creates a Part you can see in the Explorer.
 - **Error path:** a bad path returns `{ ok = false, error = "no instance at path: ..." }` rather than throwing — e.g. `gateway:Invoke({ method = "call", action = "renameInstance", params = { path = "Workspace/Nope", name = "x" } })`.
-- **Surface filtering:** calling the hidden action, `gateway:Invoke({ method = "call", action = "openWidget" })`, returns `{ ok = false, error = "unknown action: openWidget" }`.
+- **Unknown action:** calling a name that isn't registered, `gateway:Invoke({ method = "call", action = "nope" })`, returns `{ ok = false, error = "unknown action: nope" }`.
 - **Malformed request:** `gateway:Invoke({})` returns `{ ok = false, error = 'malformed request: unknown method "nil"' }`.
 
 ## Request / response reference
@@ -151,4 +149,4 @@ Request shape (`GatewayRequest`):
 
 Response shape (`ActionResult`): `{ ok: boolean, result: any?, error: string? }`.
 
-The library API the example uses (`createActionRegistry`, `createGateway`, `Surface`, and the types) is in `src/` and re-exported from `src/init.luau`.
+The library API the example uses (`createActionRegistry`, `createGateway`, and the types) is in `src/` and re-exported from `src/init.luau`.

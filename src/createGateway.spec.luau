@@ -65,48 +65,41 @@ describe("createGateway", function()
 		expect(bf:GetAttribute("ProtocolVersion")).toBe(7)
 	end)
 
-	it("list returns only agent-visible actions", function()
+	it("list returns all registered actions", function()
 		setup({
 			{
-				name = "forAgents",
-				title = "For Agents",
-				description = "Visible to agents",
+				name = "first",
+				title = "First",
+				description = "An action",
 				inputSchema = nil,
-				iconName = nil,
-				surfaces = { agent = true },
 				run = function(): any
 					return nil
 				end,
 			},
 			{
-				name = "pluginOnly",
-				title = "Plugin Only",
-				description = "Not for agents",
+				name = "second",
+				title = "Second",
+				description = "Another action",
 				inputSchema = nil,
-				iconName = nil,
-				surfaces = { plugin = true },
 				run = function(): any
 					return nil
 				end,
-			} :: any,
+			},
 		})
 
 		local result = invoke(parent, "TestGateway", { method = "list" })
 
 		expect(result.ok).toBe(true)
-		expect(#result.result.actions).toBe(1)
-		expect(result.result.actions[1].name).toBe("forAgents")
+		expect(#result.result.actions).toBe(2)
 	end)
 
-	it("call dispatches an agent-visible action", function()
+	it("call dispatches an action", function()
 		setup({
 			{
 				name = "ping",
 				title = "Ping",
 				description = "Returns pong",
 				inputSchema = nil,
-				iconName = nil,
-				surfaces = nil,
 				run = function(): any
 					return "pong"
 				end,
@@ -117,27 +110,6 @@ describe("createGateway", function()
 
 		expect(result.ok).toBe(true)
 		expect(result.result).toBe("pong")
-	end)
-
-	it("call rejects non-agent actions", function()
-		setup({
-			{
-				name = "pluginOnly",
-				title = "Plugin Only",
-				description = "Not for agents",
-				inputSchema = nil,
-				iconName = nil,
-				surfaces = { plugin = true },
-				run = function(): any
-					return "should not reach"
-				end,
-			},
-		})
-
-		local result = invoke(parent, "TestGateway", { method = "call", action = "pluginOnly" })
-
-		expect(result.ok).toBe(false)
-		expect(result.error).toBe("unknown action: pluginOnly")
 	end)
 
 	it("returns an error for a non-table request", function()
