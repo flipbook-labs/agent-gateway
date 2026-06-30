@@ -11,8 +11,10 @@ return {
 
 	SOURCEMAP_PATH = "sourcemap.json",
 	DARKLUA_SOURCEMAP_PATH = "sourcemap-darklua.json",
+	BUILD_SOURCEMAP_PATH = "sourcemap-dist.json",
 
 	ROJO_BUILD_PROJECT = "build.project.json",
+	ROJO_DEFAULT_PROJECT = "default.project.json",
 	ROJO_TESTS_PROJECT = "tests.project.json",
 
 	FOLDERS_TO_LINT = {
