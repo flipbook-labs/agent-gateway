@@ -77,5 +77,28 @@ local function analyzeRobloxSource()
 	end
 end
 
+-- The example uses require-by-string and consumes AgentGateway as a DataModel
+-- instance, so it needs a sourcemap to resolve those requires and the Roblox
+-- types. example-build maps AgentGateway to the library source, so unlike a
+-- dist-based sourcemap this needs no prior build.
+local function analyzeExampleSource()
+	run("rojo", {
+		"sourcemap",
+		project.ROJO_EXAMPLE_BUILD_PROJECT,
+		"-o",
+		project.EXAMPLE_SOURCEMAP_PATH,
+	})
+
+	run("luau-lsp", {
+		"analyze",
+		`--sourcemap={project.EXAMPLE_SOURCEMAP_PATH}`,
+		`--defs={globalDefsPath}`,
+		"--settings=./.vscode/settings.json",
+		`--ignore="**/_Index/**"`,
+		project.EXAMPLE_PATH,
+	})
+end
+
 analyzeLuauSource()
 analyzeRobloxSource()
+analyzeExampleSource()
