@@ -5,24 +5,12 @@ type ActionResult = types.ActionResult
 type Config = types.Config
 type Manifest = types.Manifest
 type ManifestEntry = types.ManifestEntry
-type Surface = types.Surface
-type Surfaces = types.Surfaces
 
 type ActionRegistry<Context> = {
 	actions: { Action<Context> },
-	dispatch: (name: string, params: unknown?, surface: Surface?) -> ActionResult,
-	manifest: (surface: Surface?) -> Manifest,
+	dispatch: (name: string, params: unknown?) -> ActionResult,
+	manifest: () -> Manifest,
 }
-
-local function isVisibleToSurface(surfaces: Surfaces?, surface: Surface?): boolean
-	if surface == nil then
-		return true
-	end
-	if surfaces == nil then
-		return true
-	end
-	return surfaces[surface] == true
-end
 
 local function createActionRegistry<Context>(
 	config: Config,
@@ -49,16 +37,9 @@ local function createActionRegistry<Context>(
 		actionMap[action.name] = action
 	end
 
-	local function dispatch(name: string, params: unknown?, surface: Surface?): ActionResult
+	local function dispatch(name: string, params: unknown?): ActionResult
 		local action = actionMap[name]
 		if action == nil then
-			return {
-				ok = false,
-				error = `unknown action: {name}`,
-			}
-		end
-
-		if surface ~= nil and not isVisibleToSurface(action.surfaces, surface) then
 			return {
 				ok = false,
 				error = `unknown action: {name}`,
@@ -79,19 +60,16 @@ local function createActionRegistry<Context>(
 		end
 	end
 
-	local function manifest(surface: Surface?): Manifest
+	local function manifest(): Manifest
 		local entries: { ManifestEntry } = {}
 
 		for _, action in snapshot do
-			if isVisibleToSurface(action.surfaces, surface) then
-				table.insert(entries, {
-					name = action.name,
-					title = action.title,
-					description = action.description,
-					inputSchema = action.inputSchema,
-					surfaces = action.surfaces,
-				})
-			end
+			table.insert(entries, {
+				name = action.name,
+				title = action.title,
+				description = action.description,
+				inputSchema = action.inputSchema,
+			})
 		end
 
 		return {

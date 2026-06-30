@@ -1,4 +1,3 @@
-local Surface = require("@root/Surface")
 local createActionRegistry = require("@root/createActionRegistry")
 local createGateway = require("@root/createGateway")
 local types = require("@root/types")
@@ -10,11 +9,8 @@ export type GatewayRequest = types.GatewayRequest
 export type InputSchema = types.InputSchema
 export type Manifest = types.Manifest
 export type ManifestEntry = types.ManifestEntry
-export type Surface = types.Surface
-export type Surfaces = types.Surfaces
 
 return {
-	Surface = Surface,
 	createActionRegistry = createActionRegistry,
 	createGateway = createGateway,
 }

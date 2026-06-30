@@ -1,10 +1,3 @@
-export type Surface = "agent" | "plugin"
-
-export type Surfaces = {
-	agent: boolean?,
-	plugin: boolean?,
-}
-
 export type InputSchema = {
 	type: string,
 	properties: { [string]: unknown }?,
@@ -17,19 +10,17 @@ export type Action<Context> = {
 	title: string,
 	description: string,
 	inputSchema: InputSchema?,
-	surfaces: Surfaces?,
 	iconName: string?,
 	run: (context: Context, params: unknown?) -> unknown,
 }
 
 -- iconName is intentionally excluded: it is a plugin-UI concern and is not
--- surfaced to agents via the manifest.
+-- exposed to agents via the manifest.
 export type ManifestEntry = {
 	name: string,
 	title: string,
 	description: string,
 	inputSchema: InputSchema?,
-	surfaces: Surfaces?,
 }
 
 export type Manifest = {

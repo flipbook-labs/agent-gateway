@@ -25,7 +25,6 @@ local function makeAction(name: string, run: ((ctx: Context, params: any?) -> an
 		title = name,
 		description = `Action {name}`,
 		inputSchema = nil,
-		surfaces = nil,
 		iconName = nil,
 		run = run or function(_ctx: Context, _params: any?): any
 			return nil
@@ -89,37 +88,6 @@ describe("createActionRegistry", function()
 			expect(result.ok).toBe(false)
 			expect(result.error).toBe("unknown action: missing")
 		end)
-
-		it("returns ok=false when the action is hidden from the requested surface", function()
-			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				{
-					name = "pluginOnly",
-					title = "Plugin Only",
-					description = "Visible only to plugin surface",
-					inputSchema = nil,
-					iconName = nil,
-					surfaces = { plugin = true },
-					run = function(): any
-						return "ok"
-					end,
-				},
-			})
-
-			local result = registry.dispatch("pluginOnly", nil, "agent")
-
-			expect(result.ok).toBe(false)
-			expect(result.error).toBe("unknown action: pluginOnly")
-		end)
-
-		it("dispatches an action with no surface restriction to any surface", function()
-			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				makeAction("open"),
-			})
-
-			expect(registry.dispatch("open", nil, "agent").ok).toBe(true)
-			expect(registry.dispatch("open", nil, "plugin").ok).toBe(true)
-			expect(registry.dispatch("open").ok).toBe(true)
-		end)
 	end)
 
 	describe("registration validation", function()
@@ -142,7 +110,7 @@ describe("createActionRegistry", function()
 	end)
 
 	describe("manifest", function()
-		it("includes all actions when no surface filter is given", function()
+		it("includes all registered actions", function()
 			local registry = createActionRegistry(defaultConfig, defaultContext, {
 				makeAction("a"),
 				makeAction("b"),
@@ -152,40 +120,6 @@ describe("createActionRegistry", function()
 
 			expect(#m.actions).toBe(2)
 			expect(m.protocolVersion).toBe(1)
-		end)
-
-		it("filters actions by surface", function()
-			local registry = createActionRegistry(defaultConfig, defaultContext, {
-				makeAction("forAll"),
-				{
-					name = "agentOnly",
-					title = "Agent Only",
-					description = "Only for agents",
-					inputSchema = nil,
-					iconName = nil,
-					surfaces = { agent = true },
-					run = function(): any
-						return nil
-					end,
-				},
-				{
-					name = "pluginOnly",
-					title = "Plugin Only",
-					description = "Only for plugins",
-					inputSchema = nil,
-					iconName = nil,
-					surfaces = { plugin = true },
-					run = function(): any
-						return nil
-					end,
-				},
-			})
-
-			local agentManifest = registry.manifest("agent")
-			local pluginManifest = registry.manifest("plugin")
-
-			expect(#agentManifest.actions).toBe(2)
-			expect(#pluginManifest.actions).toBe(2)
 		end)
 
 		it("includes protocolVersion from config", function()
@@ -209,7 +143,6 @@ describe("createActionRegistry", function()
 					description = "Does something",
 					inputSchema = schema,
 					iconName = nil,
-					surfaces = { agent = true },
 					run = function(): any
 						return nil
 					end,
@@ -223,7 +156,6 @@ describe("createActionRegistry", function()
 			expect(entry.title).toBe("My Action")
 			expect(entry.description).toBe("Does something")
 			expect(entry.inputSchema).toEqual(schema)
-			expect(entry.surfaces).toEqual({ agent = true })
 		end)
 	end)
 end)
