@@ -74,7 +74,7 @@ Alternatively, build it straight into the plugins folder by passing that path as
 the output, e.g. on macOS:
 
 ```sh
-rojo build example.project.json -o ~/Documents/Roblox/Plugins/AgentPlugin.rbxm
+lute run build-example --output ~/Documents/Roblox/Plugins/AgentPlugin.rbxm
 ```
 
 Then open Roblox Studio with any place (a Baseplate is fine). On load you should
