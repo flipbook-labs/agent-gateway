@@ -1,6 +1,6 @@
 return {
 	package = {
-		name = "PluginAgents",
+		name = "AgentGateway",
 		version = "0.1.0",
 		dependencies = {
 			FlipbookBatteries = {

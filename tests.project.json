@@ -10,7 +10,7 @@
     "ReplicatedStorage": {
       "Packages": {
         "$path": "Packages",
-        "PluginAgents": {
+        "AgentGateway": {
           "$path": "default.project.json"
         }
       }

@@ -1,6 +1,6 @@
 [remote.github]
 owner = "flipbook-labs"
-repo = "plugin-agents"
+repo = "agent-gateway"
 
 [changelog]
 header = """

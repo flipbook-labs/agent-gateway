@@ -1,14 +1,8 @@
-# PluginAgents
+# AgentGateway
 
-[![CI](https://github.com/flipbook-labs/plugin-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/flipbook-labs/plugin-agents/actions/workflows/ci.yml)
+[![CI](https://github.com/flipbook-labs/agent-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/flipbook-labs/agent-gateway/actions/workflows/ci.yml)
 
-Plugin Agents is a Roblox library for exposing Studio plugin actions to in-Studio agents through a small, MCP-inspired gateway.
-
-This repository is in early setup. The initial package will provide:
-
-- A generic actions registry for named, parameterized plugin behaviors
-- A single `BindableFunction` gateway for agent discovery and invocation
-- A small manifest format inspired by MCP tools, without claiming MCP wire protocol compatibility
+AgentGateway is a Roblox library for defining actions an agent can perform with a plugin in Studio through a small, MCP-inspired gateway.
 
 ## Installation
 
@@ -16,7 +10,7 @@ This repository is in early setup. The initial package will provide:
 
 ```toml
 [dependencies]
-PluginAgents = "flipbook-labs/plugin-agents@x.x.x"
+AgentGateway = "flipbook-labs/agent-gateway@x.x.x"
 ```
 
 ## License
