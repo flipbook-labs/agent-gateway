@@ -3,7 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Jest = (require :: any)(ReplicatedStorage.Packages.Jest)
 
-local root = ReplicatedStorage.Packages.PluginAgents
+local root = ReplicatedStorage.Packages.AgentGateway
 
 local status, result = Jest.runCLI(root, {
 	verbose = false,
