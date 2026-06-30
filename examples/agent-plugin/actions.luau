@@ -13,8 +13,9 @@
 ]]
 
 local AgentGateway = require("@agentgateway")
-local asTable = require("./asTable")
-local path = require("./path")
+local asTable = require("./common/asTable")
+local getInstanceFromPath = require("./common/getInstanceFromPath")
+local getInstancePath = require("./common/getInstancePath")
 
 local Workspace = game:GetService("Workspace")
 
@@ -46,7 +47,7 @@ local function create(_context: Context): { Action }
 				part.Anchored = true
 				part.Parent = Workspace
 
-				return { name = part.Name, path = path.getInstancePath(part) }
+				return { name = part.Name, path = getInstancePath(part) }
 			end,
 		},
 
@@ -67,7 +68,7 @@ local function create(_context: Context): { Action }
 
 				local target: Instance?
 				if type(targetPath) == "string" and targetPath ~= "" then
-					target = path.getInstanceFromPath(targetPath)
+					target = getInstanceFromPath(targetPath)
 					if target == nil then
 						error(`no instance at path: {targetPath}`)
 					end
@@ -82,7 +83,7 @@ local function create(_context: Context): { Action }
 					table.insert(children, { name = child.Name, className = child.ClassName })
 				end
 
-				return { path = path.getInstancePath(target), children = children }
+				return { path = getInstancePath(target), children = children }
 			end,
 		},
 
@@ -111,7 +112,7 @@ local function create(_context: Context): { Action }
 					error("renameInstance requires a non-empty string 'name'")
 				end
 
-				local target = path.getInstanceFromPath(targetPath)
+				local target = getInstanceFromPath(targetPath)
 				if target == nil then
 					error(`no instance at path: {targetPath}`)
 				end
@@ -119,7 +120,7 @@ local function create(_context: Context): { Action }
 				local previous = target.Name
 				target.Name = name
 
-				return { previous = previous, name = target.Name, path = path.getInstancePath(target) }
+				return { previous = previous, name = target.Name, path = getInstancePath(target) }
 			end,
 		},
 
