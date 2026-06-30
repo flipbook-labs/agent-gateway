@@ -1,8 +1,8 @@
+export type Surface = "agent" | "plugin"
+
 local Surface = {
 	Agent = "agent" :: "agent",
 	Plugin = "plugin" :: "plugin",
 }
 
-table.freeze(Surface)
-
-return Surface
+return table.freeze(Surface)

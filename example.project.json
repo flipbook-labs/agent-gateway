@@ -1,0 +1,9 @@
+{
+  "name": "AgentPlugin",
+  "tree": {
+    "$path": ".build/example",
+    "AgentGateway": {
+      "$path": "default.project.json"
+    }
+  }
+}

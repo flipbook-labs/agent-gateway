@@ -1,4 +1,6 @@
-export type Surface = "agent" | "plugin"
+local Surface = require("@root/Surface")
+
+export type Surface = Surface.Surface
 
 export type Surfaces = {
 	agent: boolean?,
@@ -22,8 +24,6 @@ export type Action<Context> = {
 	run: (context: Context, params: unknown?) -> unknown,
 }
 
--- iconName is intentionally excluded: it is a plugin-UI concern and is not
--- surfaced to agents via the manifest.
 export type ManifestEntry = {
 	name: string,
 	title: string,
