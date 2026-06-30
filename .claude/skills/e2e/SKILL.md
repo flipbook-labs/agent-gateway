@@ -1,15 +1,15 @@
 ---
 name: e2e
-description: Run the PluginAgents end-to-end test. Use this skill to validate PluginAgents in isolation — build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Use it whenever you want to confirm the agent↔plugin round trip works from a fresh clone, or are asked to "run the e2e test" / "test the example plugin".
+description: Run the AgentGateway end-to-end test. Use this skill to validate AgentGateway in isolation — build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Use it whenever you want to confirm the agent↔plugin round trip works from a fresh clone, or are asked to "run the e2e test" / "test the example plugin".
 ---
 
-# End-to-end test for PluginAgents
+# End-to-end test for AgentGateway
 
-Take PluginAgents from a fresh clone to a working agent↔plugin round trip: build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Work through the steps below in order. All paths are relative to the repository root.
+Take AgentGateway from a fresh clone to a working agent↔plugin round trip: build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Work through the steps below in order. All paths are relative to the repository root.
 
 ## What you are testing
 
-PluginAgents exposes a plugin's actions to in-Studio agents through a single [`BindableFunction`](https://create.roblox.com/docs/reference/engine/classes/BindableFunction) gateway. The example plugin in `examples/agent-plugin` registers a few actions and stands up that gateway. The end-to-end test is:
+AgentGateway exposes a plugin's actions to in-Studio agents through a single [`BindableFunction`](https://create.roblox.com/docs/reference/engine/classes/BindableFunction) gateway. The example plugin in `examples/agent-plugin` registers a few actions and stands up that gateway. The end-to-end test is:
 
 1. Build and install the example plugin.
 2. Open a place in Studio so the plugin loads.
@@ -44,9 +44,9 @@ lute run install   # installs Loom + Wally dependencies and generates sourcemaps
 lute run build-example
 ```
 
-This first builds the PluginAgents source into `dist/`, then builds the example into `AgentPlugin.rbxm` at the repo root. The task accepts an optional `--output <path>` flag (default `AgentPlugin.rbxm`).
+This first builds the AgentGateway source into `dist/`, then builds the example into `AgentPlugin.rbxm` at the repo root. The task accepts an optional `--output <path>` flag (default `AgentPlugin.rbxm`).
 
-The built model is a single `Script` named `AgentPlugin` with the PluginAgents library nested inside it, so it is fully self-contained.
+The built model is a single `Script` named `AgentPlugin` with the AgentGateway library nested inside it, so it is fully self-contained.
 
 > **Steps 3–6 require Roblox Studio.** If you only need to confirm the package builds, stop here — steps 1–2 above are the full headless path.
 

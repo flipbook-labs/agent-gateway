@@ -1,7 +1,7 @@
 --[[
 	Action definitions for the example agent plugin.
 
-	Each action is a PluginAgents.Action<Context>. Actions marked
+	Each action is an AgentGateway.Action<Context>. Actions marked
 	`surfaces = { agent = true }` show up in the agent manifest (returned by the
 	gateway's `list` method) and can be invoked by an agent. The `openWidget`
 	action is `plugin`-only to demonstrate that the gateway hides plugin-surface
@@ -12,7 +12,7 @@
 	registry and returned to the caller as `{ ok = false, error = ... }`.
 ]]
 
-local PluginAgents = require("@pluginagents")
+local AgentGateway = require("@agentgateway")
 local asTable = require("./asTable")
 local path = require("./path")
 
@@ -22,7 +22,7 @@ export type Context = {
 	plugin: Plugin,
 }
 
-type Action = PluginAgents.Action<Context>
+type Action = AgentGateway.Action<Context>
 
 local function create(_context: Context): { Action }
 	return {

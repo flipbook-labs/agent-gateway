@@ -1,6 +1,6 @@
 --[[
 	Example Studio plugin that exposes a few actions to in-Studio agents through
-	PluginAgents.
+	AgentGateway.
 
 	When this plugin loads it builds an action registry and a gateway. The
 	gateway is a BindableFunction named "FlipbookAgentGateway" parented to
@@ -15,9 +15,9 @@
 ]]
 
 local Actions = require("@self/actions")
-local PluginAgents = require("@pluginagents")
+local AgentGateway = require("@agentgateway")
 
-local config: PluginAgents.Config = {
+local config: AgentGateway.Config = {
 	name = "FlipbookAgentGateway",
 	protocolVersion = 1,
 }
@@ -26,8 +26,8 @@ local context: Actions.Context = {
 	plugin = plugin,
 }
 
-local registry = PluginAgents.createActionRegistry(config, context, Actions.create(context))
-local cleanup = PluginAgents.createGateway(registry, config)
+local registry = AgentGateway.createActionRegistry(config, context, Actions.create(context))
+local cleanup = AgentGateway.createGateway(registry, config)
 
 -- Tear the gateway down when the plugin unloads so a reload doesn't leak a stale
 -- BindableFunction (createGateway is also idempotent, but this keeps CoreGui tidy).

@@ -1,5 +1,5 @@
 [package]
-name = "flipbook-labs/plugin-agents"
+name = "flipbook-labs/agent-gateway"
 description = "Action registry and agent gateway for Roblox Studio plugins"
 version = "0.1.0"
 license = "MIT"

@@ -23,14 +23,14 @@ args:parse({ ... })
 local output = args:get("output")
 assert(typeof(output) == "string", `bad value for output (string expected, got {typeof(output)})`)
 
--- Build the library first so the example has a compiled PluginAgents to bundle
+-- Build the library first so the example has a compiled AgentGateway to bundle
 -- (dist via default.project.json). `lute run build` defaults to the prod channel,
 -- which is all the example needs.
 run("lute", { "run", "build" })
 
 -- Compile the example the same way as the library: convert its require-by-string
--- to Roblox requires with darklua. The sourcemap maps PluginAgents to the library
--- source so the `@pluginagents` alias resolves to the right instance; darklua reads
+-- to Roblox requires with darklua. The sourcemap maps AgentGateway to the library
+-- source so the `@agentgateway` alias resolves to the right instance; darklua reads
 -- it from the path configured in .darklua.json.
 run("rojo", { "sourcemap", project.ROJO_EXAMPLE_BUILD_PROJECT, "-o", project.DARKLUA_SOURCEMAP_PATH })
 

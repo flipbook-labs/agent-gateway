@@ -2,7 +2,7 @@
   "name": "AgentPlugin",
   "tree": {
     "$path": "examples/agent-plugin",
-    "PluginAgents": {
+    "AgentGateway": {
       "$path": "src"
     }
   }

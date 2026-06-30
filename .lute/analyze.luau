@@ -77,9 +77,9 @@ local function analyzeRobloxSource()
 	end
 end
 
--- The example uses require-by-string and consumes PluginAgents as a DataModel
+-- The example uses require-by-string and consumes AgentGateway as a DataModel
 -- instance, so it needs a sourcemap to resolve those requires and the Roblox
--- types. example-build maps PluginAgents to the library source, so unlike a
+-- types. example-build maps AgentGateway to the library source, so unlike a
 -- dist-based sourcemap this needs no prior build.
 local function analyzeExampleSource()
 	run("rojo", {

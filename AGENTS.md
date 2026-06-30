@@ -1,6 +1,6 @@
 # AGENTS.md
 
-PluginAgents exposes a plugin's actions to in-Studio agents through a single gateway. The library lives in `src/` (re-exported from `src/init.luau`); a runnable example plugin lives in `examples/agent-plugin`.
+AgentGateway exposes a plugin's actions to in-Studio agents through a single gateway. The library lives in `src/` (re-exported from `src/init.luau`); a runnable example plugin lives in `examples/agent-plugin`.
 
 ## Skills
 

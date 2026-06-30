@@ -9,7 +9,7 @@ return {
 	LUAU_PACKAGES_PATH = "LuauPackages",
 	LUTE_SCRIPTS_PATH = ".lute",
 
-	MODEL_FILENAME = "PluginAgents.rbxm",
+	MODEL_FILENAME = "AgentGateway.rbxm",
 	EXAMPLE_MODEL_FILENAME = "AgentPlugin.rbxm",
 
 	SOURCEMAP_PATH = "sourcemap.json",
