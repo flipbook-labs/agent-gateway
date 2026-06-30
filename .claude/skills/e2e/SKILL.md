@@ -3,13 +3,9 @@ name: e2e
 description: Run the PluginAgents end-to-end test. Use this skill to validate PluginAgents in isolation — build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Use it whenever you want to confirm the agent↔plugin round trip works from a fresh clone, or are asked to "run the e2e test" / "test the example plugin".
 ---
 
-# Agent runbook: end-to-end test for PluginAgents
+# End-to-end test for PluginAgents
 
-This is a step-by-step guide for an agent to validate PluginAgents in isolation — build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. It exists so that an agent with no prior context can take this package from a fresh clone to a working agent↔plugin round trip.
-
-If you are a human, the same steps work for you; the Studio steps just assume you have Roblox Studio open.
-
-All paths below are relative to the repository root.
+Take PluginAgents from a fresh clone to a working agent↔plugin round trip: build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio. Work through the steps below in order. All paths are relative to the repository root.
 
 ## What you are testing
 
@@ -48,7 +44,7 @@ lute run install   # installs Loom + Wally dependencies and generates sourcemaps
 lute run build-example
 ```
 
-This first builds the PluginAgents source into `dist/`, then builds the example into `AgentPlugin.rbxm` at the repo root. The task accepts two optional flags: `--channel dev|prod` (default `dev`) and `--output <path>` (default `AgentPlugin.rbxm`).
+This first builds the PluginAgents source into `dist/`, then builds the example into `AgentPlugin.rbxm` at the repo root. The task accepts an optional `--output <path>` flag (default `AgentPlugin.rbxm`).
 
 The built model is a single `Script` named `AgentPlugin` with the PluginAgents library nested inside it, so it is fully self-contained.
 

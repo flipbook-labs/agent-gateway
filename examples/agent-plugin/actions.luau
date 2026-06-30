@@ -1,4 +1,3 @@
---!strict
 --[[
 	Action definitions for the example agent plugin.
 
@@ -13,7 +12,9 @@
 	registry and returned to the caller as `{ ok = false, error = ... }`.
 ]]
 
-local PluginAgents = require(script.Parent.PluginAgents)
+local PluginAgents = require("@pluginagents")
+local asTable = require("./asTable")
+local path = require("./path")
 
 local Workspace = game:GetService("Workspace")
 
@@ -22,62 +23,6 @@ export type Context = {
 }
 
 type Action = PluginAgents.Action<Context>
-
--- Resolve a slash-separated path like "Workspace/Model/Part" to an instance,
--- treating the first segment as a service off the DataModel. Returns nil if any
--- segment is missing.
-local function resolvePath(path: string): Instance?
-	local current: Instance = game
-	local first = true
-
-	for _, segment in string.split(path, "/") do
-		if segment == "" then
-			continue
-		end
-
-		local nextInstance: Instance? = current:FindFirstChild(segment)
-
-		if nextInstance == nil and first then
-			local ok, service = pcall(function()
-				return game:GetService(segment :: any)
-			end)
-			if ok then
-				nextInstance = service
-			end
-		end
-
-		if nextInstance == nil then
-			return nil
-		end
-
-		current = nextInstance
-		first = false
-	end
-
-	return current
-end
-
-local function asTable(params: unknown?): { [string]: unknown }
-	if type(params) == "table" then
-		return params :: { [string]: unknown }
-	end
-	return {}
-end
-
--- Build the slash-separated path that `resolvePath` understands (e.g.
--- "Workspace/Model/Part"). Unlike `Instance:GetFullName()`, which uses dots and
--- cannot be fed back into actions that resolve by path.
-local function pathOf(instance: Instance): string
-	local segments = {}
-	local current: Instance? = instance
-
-	while current ~= nil and current ~= game do
-		table.insert(segments, 1, current.Name)
-		current = current.Parent
-	end
-
-	return table.concat(segments, "/")
-end
 
 local function create(_context: Context): { Action }
 	return {
@@ -101,7 +46,7 @@ local function create(_context: Context): { Action }
 				part.Anchored = true
 				part.Parent = Workspace
 
-				return { name = part.Name, path = pathOf(part) }
+				return { name = part.Name, path = path.getInstancePath(part) }
 			end,
 		},
 
@@ -118,13 +63,13 @@ local function create(_context: Context): { Action }
 			surfaces = { agent = true, plugin = true },
 			run = function(_ctx, params)
 				local options = asTable(params)
-				local path = options.path
+				local targetPath = options.path
 
 				local target: Instance?
-				if type(path) == "string" and path ~= "" then
-					target = resolvePath(path)
+				if type(targetPath) == "string" and targetPath ~= "" then
+					target = path.getInstanceFromPath(targetPath)
 					if target == nil then
-						error(`no instance at path: {path}`)
+						error(`no instance at path: {targetPath}`)
 					end
 				else
 					target = Workspace
@@ -137,7 +82,7 @@ local function create(_context: Context): { Action }
 					table.insert(children, { name = child.Name, className = child.ClassName })
 				end
 
-				return { path = pathOf(target), children = children }
+				return { path = path.getInstancePath(target), children = children }
 			end,
 		},
 
@@ -156,25 +101,25 @@ local function create(_context: Context): { Action }
 			surfaces = { agent = true, plugin = true },
 			run = function(_ctx, params)
 				local options = asTable(params)
-				local path = options.path
+				local targetPath = options.path
 				local name = options.name
 
-				if type(path) ~= "string" or path == "" then
+				if type(targetPath) ~= "string" or targetPath == "" then
 					error("renameInstance requires a non-empty string 'path'")
 				end
 				if type(name) ~= "string" or name == "" then
 					error("renameInstance requires a non-empty string 'name'")
 				end
 
-				local target = resolvePath(path)
+				local target = path.getInstanceFromPath(targetPath)
 				if target == nil then
-					error(`no instance at path: {path}`)
+					error(`no instance at path: {targetPath}`)
 				end
 
 				local previous = target.Name
 				target.Name = name
 
-				return { previous = previous, name = target.Name, path = pathOf(target) }
+				return { previous = previous, name = target.Name, path = path.getInstancePath(target) }
 			end,
 		},
 

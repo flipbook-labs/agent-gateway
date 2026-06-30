@@ -5,6 +5,7 @@
 		"std": "~/.lute/typedefs/1.0.1/std",
 		"luaupkg": "~/.loom/store",
 		"pkg": "./Packages",
+		"pluginagents": "./src",
 		"repo": ".",
 		"root": "./src",
 		"batteries": "~/.loom/store/Lute@v1.0.1-nightly.20260508/batteries"

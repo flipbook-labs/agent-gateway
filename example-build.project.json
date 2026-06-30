@@ -1,9 +1,9 @@
 {
   "name": "AgentPlugin",
   "tree": {
-    "$path": ".build/example",
+    "$path": "examples/agent-plugin",
     "PluginAgents": {
-      "$path": "default.project.json"
+      "$path": "src"
     }
   }
 }

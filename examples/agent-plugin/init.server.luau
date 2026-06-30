@@ -1,4 +1,3 @@
---!strict
 --[[
 	Example Studio plugin that exposes a few actions to in-Studio agents through
 	PluginAgents.
@@ -11,12 +10,12 @@
 		gateway:Invoke({ method = "list" })
 		gateway:Invoke({ method = "call", action = "insertPart", params = { name = "Foo" } })
 
-	See examples/agent-plugin/actions.luau for the action definitions and
-	AGENTS.md for the full end-to-end runbook.
+	See examples/agent-plugin/actions.luau for the action definitions and the
+	`e2e` skill (.claude/skills/e2e/SKILL.md) for the full end-to-end test.
 ]]
 
-local Actions = require(script.actions)
-local PluginAgents = require(script.PluginAgents)
+local Actions = require("@self/actions")
+local PluginAgents = require("@pluginagents")
 
 local config: PluginAgents.Config = {
 	name = "FlipbookAgentGateway",
