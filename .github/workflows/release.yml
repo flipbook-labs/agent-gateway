@@ -22,6 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.FLIPBOOK_BACKEND_APP_ID }}
+          private-key: ${{ secrets.FLIPBOOK_BACKEND_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -45,6 +52,10 @@ jobs:
         uses: flipbook-labs/changewrite@v0.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Author the publish PR as the flipbook-backend GitHub App so it
+          # triggers CI (PRs opened with GITHUB_TOKEN don't) and matches our
+          # other repos.
+          pr-token: ${{ steps.app-token.outputs.token }}
           force-publish: ${{ inputs.force_publish || false }}
           base: main
           branch: ${{ github.event_name == 'pull_request' && 'debug-publish-next-version' || 'publish-next-version' }}
