@@ -112,6 +112,31 @@ describe("createGateway", function()
 		expect(result.result).toBe("pong")
 	end)
 
+	it("help returns AgentGateway protocol usage", function()
+		setup()
+
+		local result = invoke(parent, "TestGateway", { method = "help" })
+
+		expect(result.ok).toBe(true)
+		expect(result.result.protocolVersion).toBe(1)
+		expect(#result.result.methods).toBe(3)
+		expect(result.result.methods[1].name).toBe("help")
+		expect(result.result.methods[2].name).toBe("list")
+		expect(result.result.methods[3].name).toBe("call")
+		expect(result.result.usage).toContain("list")
+		expect(result.result.responses.success).toContain("ok = true")
+		expect(result.result.app).toBeNil()
+	end)
+
+	it("help includes the host help blob when configured", function()
+		setup(nil, { help = "Host-specific guidance" })
+
+		local result = invoke(parent, "TestGateway", { method = "help" })
+
+		expect(result.ok).toBe(true)
+		expect(result.result.app).toBe("Host-specific guidance")
+	end)
+
 	it("returns an error for a non-table request", function()
 		setup()
 
@@ -119,6 +144,8 @@ describe("createGateway", function()
 
 		expect(result.ok).toBe(false)
 		expect(result.error).toContain("malformed request")
+		expect(result.help).never.toBeNil()
+		expect(result.help.protocolVersion).toBe(1)
 	end)
 
 	it("returns an error for an unknown method", function()
@@ -128,6 +155,8 @@ describe("createGateway", function()
 
 		expect(result.ok).toBe(false)
 		expect(result.error).toContain("malformed request")
+		expect(result.help).never.toBeNil()
+		expect(result.help.protocolVersion).toBe(1)
 	end)
 
 	it("returns an error for call without an action name", function()
@@ -137,6 +166,8 @@ describe("createGateway", function()
 
 		expect(result.ok).toBe(false)
 		expect(result.error).toContain("malformed request")
+		expect(result.help).never.toBeNil()
+		expect(result.help.protocolVersion).toBe(1)
 	end)
 
 	it("is idempotent: replaces an existing gateway with the same name", function()
