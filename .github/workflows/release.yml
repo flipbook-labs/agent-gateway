@@ -52,9 +52,6 @@ jobs:
         uses: flipbook-labs/changewrite@v0.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Author the publish PR as the flipbook-backend GitHub App so it
-          # triggers CI (PRs opened with GITHUB_TOKEN don't) and matches our
-          # other repos.
           pr-token: ${{ steps.app-token.outputs.token }}
           force-publish: ${{ inputs.force_publish || false }}
           base: main
