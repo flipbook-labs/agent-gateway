@@ -27,20 +27,39 @@ export type Manifest = {
 	actions: { ManifestEntry },
 }
 
+export type ProtocolHelpMethod = {
+	name: string,
+	request: string,
+	description: string,
+}
+
+export type ProtocolHelp = {
+	protocolVersion: number,
+	methods: { ProtocolHelpMethod },
+	usage: string,
+	responses: {
+		success: string,
+		failure: string,
+	},
+	app: string?,
+}
+
 export type ActionResult = {
 	ok: boolean,
 	result: unknown?,
 	error: string?,
+	help: ProtocolHelp?,
 }
 
 export type Config = {
 	name: string,
 	protocolVersion: number,
 	parent: Instance?,
+	help: string?,
 }
 
 export type GatewayRequest = {
-	method: "list" | "call",
+	method: "help" | "list" | "call",
 	action: string?,
 	params: unknown?,
 }
