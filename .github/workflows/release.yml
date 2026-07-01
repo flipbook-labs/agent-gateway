@@ -42,7 +42,7 @@ jobs:
         run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
 
       - id: changewrite
-        uses: flipbook-labs/changewrite@v0.3.0
+        uses: flipbook-labs/changewrite@v0.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           force-publish: ${{ inputs.force_publish || false }}

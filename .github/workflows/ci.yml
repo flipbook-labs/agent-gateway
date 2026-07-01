@@ -7,6 +7,21 @@ on:
   pull_request:
 
 jobs:
+  changelog:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: changewrite
+        uses: flipbook-labs/changewrite@v0.4.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          require-entry: true
+
+
   build:
     runs-on: ubuntu-latest
     steps:
