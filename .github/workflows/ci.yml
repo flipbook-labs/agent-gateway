@@ -21,14 +21,14 @@ jobs:
           fetch-depth: 0
 
       - id: changewrite
-        uses: flipbook-labs/changewrite@v0.7.0
+        uses: flipbook-labs/changewrite@v0.12.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           require-entry: true
 
       # Clear the publish-lock status on this PR's head so a required check can pass.
       # The publish PR gets its lock managed by the release workflow instead.
-      - uses: flipbook-labs/changewrite/publish-lock@v0.7.0
+      - uses: flipbook-labs/changewrite/publish-lock@v0.12.0
         if: github.head_ref != 'publish-next-version'
         with:
           locked: false
