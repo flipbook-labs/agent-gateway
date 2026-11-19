@@ -1,8 +1,6 @@
 -- The package's own aliases. This file ships with the package (see `files` in
--- `pkg.luau`), unlike the repo-root `.config.luau`, whose generated store
--- aliases would point a vendored copy back at the Loom store. Dependency
--- aliases, like `pkg` for the Wally packages, aren't defined here, so a
--- consumer's config supplies them.
+-- `pkg.luau`), so `@root` resolves inside a vendored copy too. The Wally
+-- packages come through `@pkg`, which a consumer's own config defines.
 return {
 	luau = {
 		aliases = {
