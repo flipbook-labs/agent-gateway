@@ -2,6 +2,8 @@ return {
 	package = {
 		name = "AgentGateway",
 		version = "0.2.0",
+		-- `src/.config.luau` is hidden, so it has to be named to ship.
+		files = { "/src/**", "!/src/**/*.spec.luau", "!/src/jest.config.luau", "/src/.config.luau", "/README.md", "/LICENSE" },
 		dependencies = {
 			["flipbook-batteries"] = {
 				rev = "v0.13.0",

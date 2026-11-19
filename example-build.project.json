@@ -1,5 +1,8 @@
 {
   "name": "AgentPlugin",
+  "globIgnorePaths": [
+    "**/.config.luau"
+  ],
   "tree": {
     "$path": "examples/agent-plugin",
     "AgentGateway": {
