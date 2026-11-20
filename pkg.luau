@@ -1,7 +1,7 @@
 return {
 	package = {
 		name = "AgentGateway",
-		version = "0.2.0",
+		version = "0.2.1",
 		-- `src/.config.luau` is hidden, so it has to be named to ship.
 		files = { "/src/**", "!/src/**/*.spec.luau", "!/src/jest.config.luau", "/src/.config.luau", "/README.md", "/LICENSE" },
 		dependencies = {
