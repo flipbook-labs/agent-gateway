@@ -79,11 +79,6 @@ local function build()
 		project.BUILD_PATH,
 	})
 
-	-- `src/.config.luau` gives a Loom-vendored copy of the package its own
-	-- aliases. Darklua has already turned those requires into Roblox paths, and
-	-- Rojo would otherwise sync the file as a ModuleScript named `.config`.
-	fs.remove(`{project.BUILD_PATH}/.config.luau`)
-
 	if channel == "prod" then
 		for _, prunedFilePattern in PRUNED_FILE_PATTERNS do
 			local prunedFiles = find(project.BUILD_PATH, prunedFilePattern)
