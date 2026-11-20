@@ -6,7 +6,7 @@
         "name": "luau",
         "aliases": {
           "@root": "./src",
-          "@agentgateway": "./src",
+          "@agent-gateway": "./src",
           "@pkg": "./Packages"
         }
       },

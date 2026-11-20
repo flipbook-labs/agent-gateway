@@ -6,7 +6,7 @@ return {
 			std = "~/.lute/typedefs/1.0.1/std",
 			pkg = "./Packages",
 			lpm = "./.lpm",
-			agentgateway = "./src",
+			["agent-gateway"] = "./src",
 			repo = ".",
 			root = "./src",
 		},
