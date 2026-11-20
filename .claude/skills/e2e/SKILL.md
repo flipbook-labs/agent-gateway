@@ -33,10 +33,10 @@ From the repo root:
 
 ```sh
 rokit install      # installs pinned tools (rojo, lute, darklua, selene, ...)
-lute run install   # installs Loom + Wally dependencies and generates sourcemaps
+lute run install   # installs Lute packages + Wally dependencies and generates sourcemaps
 ```
 
-`lute run install` must succeed before any build — it populates `Packages/` and the Loom store the build scripts require.
+`lute run install` must succeed before any build — it populates `Packages/` and the `.lpm/` folder the build scripts require.
 
 ## 2. Build the example plugin
 

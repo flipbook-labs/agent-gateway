@@ -15,7 +15,7 @@
 ]]
 
 local Actions = require("@self/actions")
-local AgentGateway = require("@agentgateway")
+local AgentGateway = require("@agent-gateway")
 
 local config: AgentGateway.Config = {
 	name = "FlipbookAgentGateway",
