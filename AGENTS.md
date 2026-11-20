@@ -12,7 +12,7 @@ Complete every step below before you write any code, tests, changelog entries, o
    rokit install && lute run install
    ```
 
-   `rokit install` puts `lute`, `luau-lsp`, `stylua`, and `selene` on PATH. `lute run install` copies the Loom dependencies declared in [`pkg.luau`](pkg.luau) into `.lpm/<key>@<rev>` folders, which scripts require through the `@lpm` alias in [`.config.luau`](.config.luau), and installs the Wally runtime dependencies into `Packages/`. The shared skills library is a dev dependency, so it lands in `.lpm/` for you to read but is not shipped with the package. Without this step the skills are not on disk.
+   `rokit install` puts `lute`, `luau-lsp`, `stylua`, and `selene` on PATH. `lute run install` copies the Lute packages declared in [`pkg.luau`](pkg.luau) into `.lpm/<key>@<rev>` folders, which scripts require through the `@lpm` alias in [`.config.luau`](.config.luau), and installs the Wally runtime dependencies into `Packages/`. The shared skills library is a dev dependency, so it lands in `.lpm/` for you to read but is not shipped with the package. Without this step the skills are not on disk.
 
 2. Find the skills folder: it's `.lpm/agent-skills@<rev>`, where `<rev>` is the `agent-skills` rev in [`pkg.luau`](pkg.luau). Use that path wherever `<skills>` appears below.
 

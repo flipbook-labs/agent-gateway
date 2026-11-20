@@ -13,7 +13,7 @@ local result = process.run({ "lute", "pkg", "install", "--vendor" }, { stdio = "
 assert(result.ok, "lute pkg install failed")
 
 -- The Roblox runtime dependencies come from Wally and go in `Packages/`, apart
--- from the Loom dependencies above.
+-- from the Lute packages above.
 local function run(command: { string })
 	local res = process.run(command, { stdio = "inherit" })
 	assert(res.ok, `{table.concat(command, " ")} failed with exit code {res.exitcode}`)
