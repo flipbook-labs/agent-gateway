@@ -17,7 +17,7 @@ lute run analyze
 lute run test
 ```
 
-Tests are `*.spec.luau` files next to the code they cover.
+`lute run test` uploads the tests to a Roblox test place and runs them there, so it needs an Open Cloud API key, set as `ROBLOX_API_KEY` in your environment or a `.env` file, or passed with `--apiKey`. Tests are `*.spec.luau` files next to the code they cover.
 
 ## Example plugin
 
