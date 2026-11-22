@@ -17,7 +17,7 @@ With Lute, add this to `pkg.luau` and run `lute pkg install --vendor`:
 ["agent-gateway"] = {
 	rev = "v0.2.1",
 	sourceKind = "github",
-	source = "https://github.com/flipbook-labs/plugin-agents",
+	source = "https://github.com/flipbook-labs/agent-gateway",
 },
 ```
 
