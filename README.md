@@ -58,12 +58,17 @@ local cleanup = AgentGateway.createGateway(registry, config)
 plugin.Unloading:Connect(cleanup)
 ```
 
-An agent finds the gateway by its tag, wherever the plugin parented it, and calls it:
+Every gateway has the `AgentGateway` tag, wherever its plugin parented it, and is named after its config. Several plugins can have one, so an agent picks the gateway it wants by name and calls it:
 
 ```luau
 local CollectionService = game:GetService("CollectionService")
 
-local gateway = CollectionService:GetTagged("AgentGateway")[1]
+local gateway
+for _, tagged in CollectionService:GetTagged("AgentGateway") do
+	if tagged.Name == "MyPluginGateway" then
+		gateway = tagged
+	end
+end
 
 gateway:Invoke({ method = "list" })
 gateway:Invoke({ method = "call", action = "insertPart" })

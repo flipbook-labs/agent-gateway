@@ -83,15 +83,14 @@ for _, gateway in CollectionService:GetTagged("AgentGateway") do
 end
 ```
 
-You should see one `BindableFunction` named **`ExampleAgentGateway`** under `CoreGui`, with a `ProtocolVersion` of `2` and the example plugin's description. The instance also carries a `Usage` attribute with a one-line protocol summary. This is the only object an agent needs — everything goes through `gateway:Invoke(request)`.
+You should see a `BindableFunction` named **`ExampleAgentGateway`** under `CoreGui`, with a `ProtocolVersion` of `2` and the example plugin's description. The instance also carries a `Usage` attribute with a one-line protocol summary. Other plugins' gateways are listed too when they're installed. This is the only object an agent needs — everything goes through `gateway:Invoke(request)`.
 
 ## 5. Discover actions with `list`
 
 Invoke the gateway with the `list` method to get the manifest — the gateway's identity, agent instructions, and available actions:
 
 ```lua
-local CollectionService = game:GetService("CollectionService")
-local gateway = CollectionService:GetTagged("AgentGateway")[1]
+local gateway = game:GetService("CoreGui").ExampleAgentGateway
 local response = gateway:Invoke({ method = "list" })
 print(response)
 ```
