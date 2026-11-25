@@ -12,15 +12,28 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      statuses: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          # `require-entry` diffs against the PR base branch, so a merge-base must
+          # exist. Full history guarantees it (the default depth-1 checkout does not).
+          fetch-depth: 0
 
       - id: changewrite
-        uses: flipbook-labs/changewrite@v0.5.0
+        uses: flipbook-labs/changewrite@v0.16.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           require-entry: true
+
+      # Clear the publish-lock status on this PR's head so a required check can pass.
+      # The publish PR gets its lock managed by the release workflow instead.
+      - uses: flipbook-labs/changewrite/publish-lock@v0.16.0
+        if: github.head_ref != 'publish-next-version'
+        with:
+          locked: false
+          sha: ${{ github.event.pull_request.head.sha }}
+          url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 
   build:

@@ -18,8 +18,8 @@ local TAG = "AgentGateway"
 
 -- The two request forms, written once so the "Usage" attribute and the error
 -- grammar quote them identically. Change the wording or spacing here, not in
--- the two prose strings below (the skill in .agents/skills is a third copy,
--- but Markdown can't share a constant — keep it in sync by hand).
+-- the two prose strings below. The README and the shared use-agent-gateway skill
+-- in flipbook-labs/agent-skills also quote them, so update those by hand.
 local LIST_FORM = '{method = "list"}'
 local CALL_FORM = '{method = "call", action = "<actionName>", params = {...}}'
 

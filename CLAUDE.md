@@ -1,10 +1,7 @@
-# CLAUDE.md
+@AGENTS.md
 
-See [AGENTS.md](AGENTS.md) for the repo overview.
+# Claude-specific routing
 
-Task-specific runbooks live as skills under `.agents/skills/<name>/SKILL.md`. Each skill's frontmatter `description` says when to use it. To use one, read its `SKILL.md` and follow the steps.
+Follow [`AGENTS.md`](AGENTS.md) first. Its "Mandatory first steps" gate (bootstrap, resolve the skills path, read the routing index in full) applies to you before any code, tests, changelog entries, or PR prose, and its subagent rule applies every time you use the Task tool.
 
-Available skills:
-
-- **`use-agent-gateway`** (`.agents/skills/use-agent-gateway/SKILL.md`) — discover and drive AgentGateway-based plugins from inside Studio; Studio MCP setup and troubleshooting.
-- **`e2e`** (`.agents/skills/e2e/SKILL.md`) — end-to-end test: build the example Studio plugin, install it, then discover and invoke its actions through the gateway from inside Studio.
+The one Claude-specific note: the shared skills live under `<skills>/src/<scope>/<name>/SKILL.md` (the `<skills>` path you resolve in step 2 of the gate), not in `.claude/skills/`, so the Skill tool does not surface them. You route to them yourself by following the gate above. The repo-local `e2e` runbook does live under `.claude/skills/`, so the Skill tool surfaces that one directly.

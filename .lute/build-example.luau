@@ -1,5 +1,5 @@
-local FlipbookBatteries = require("@luaupkg/FlipbookBatteries@v0.12.0")
-local cli = require("@batteries/cli")
+local FlipbookBatteries = require("@lpm/flipbook-batteries@v0.13.1")
+local cli = require("@lpm/batteries@v1.0.1-nightly.20261115/cli")
 
 local project = require("@repo/project")
 
@@ -30,7 +30,7 @@ run("lute", { "run", "build" })
 
 -- Compile the example the same way as the library: convert its require-by-string
 -- to Roblox requires with darklua. The sourcemap maps AgentGateway to the library
--- source so the `@agentgateway` alias resolves to the right instance; darklua reads
+-- source so the `@agent-gateway` alias resolves to the right instance; darklua reads
 -- it from the path configured in .darklua.json.
 run("rojo", { "sourcemap", project.ROJO_EXAMPLE_BUILD_PROJECT, "-o", project.DARKLUA_SOURCEMAP_PATH })
 

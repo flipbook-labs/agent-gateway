@@ -11,11 +11,11 @@
 		gateway:Invoke({ method = "call", action = "insertPart", params = { name = "Foo" } })
 
 	See examples/agent-plugin/actions.luau for the action definitions and the
-	`e2e` skill (.agents/skills/e2e/SKILL.md) for the full end-to-end test.
+	`e2e` skill (.claude/skills/e2e/SKILL.md) for the full end-to-end test.
 ]]
 
 local Actions = require("@self/actions")
-local AgentGateway = require("@agentgateway")
+local AgentGateway = require("@agent-gateway")
 
 local config: AgentGateway.Config = {
 	name = "ExampleAgentGateway",

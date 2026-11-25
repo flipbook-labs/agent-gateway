@@ -15,8 +15,24 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  statuses: write
+
+env:
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
+  lock:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      statuses: write
+    steps:
+      - uses: flipbook-labs/changewrite/publish-lock@v0.16.0
+        with:
+          locked: true
+          url: ${{ env.RUN_URL }}
+
   release:
     if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'debug:release-pr')
     runs-on: ubuntu-latest
@@ -29,7 +45,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ secrets.FLIPBOOK_BACKEND_APP_ID }}
+          client-id: ${{ vars.FLIPBOOK_BACKEND_CLIENT_ID }}
           private-key: ${{ secrets.FLIPBOOK_BACKEND_APP_PRIVATE_KEY }}
 
       - uses: actions/checkout@v7
@@ -52,7 +68,7 @@ jobs:
         run: lute run build --channel prod --output ${{ env.MODEL_FILE }}
 
       - id: changewrite
-        uses: flipbook-labs/changewrite@v0.5.0
+        uses: flipbook-labs/changewrite@v0.16.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pr-token: ${{ steps.app-token.outputs.token }}
@@ -92,3 +108,10 @@ jobs:
         env:
           MODEL_FILE: ${{ env.MODEL_FILE }}
           WALLY_REGISTRY_TOKEN: ${{ secrets.WALLY_REGISTRY_TOKEN }}
+
+      - name: Unlock the publish PR
+        if: github.event_name == 'push'
+        uses: flipbook-labs/changewrite/publish-lock@v0.16.0
+        with:
+          locked: false
+          url: ${{ env.RUN_URL }}

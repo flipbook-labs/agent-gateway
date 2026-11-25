@@ -21,7 +21,7 @@ AgentGateway exposes a plugin's actions to in-Studio agents through a single [`B
 
 - [Rokit](https://github.com/rojo-rbx/rokit) (toolchain manager). Everything else — Rojo, Lute, Darklua, etc. — is pinned in `rokit.toml` and installed by Rokit.
 - Roblox Studio.
-- A way to run Luau **inside** Studio — see the [`use-agent-gateway`](../use-agent-gateway/SKILL.md) skill for Studio MCP setup and troubleshooting. The Studio Command Bar (View → Command Bar) works for running snippets by hand.
+- A way to run Luau **inside** Studio — see the shared `agent-gateway/use-agent-gateway` skill for Studio MCP setup. The Studio Command Bar (View → Command Bar) works for running snippets by hand.
 
 ## 1. Bootstrap the toolchain
 
@@ -29,10 +29,10 @@ From the repo root:
 
 ```sh
 rokit install      # installs pinned tools (rojo, lute, darklua, selene, ...)
-lute run install   # installs Loom + Wally dependencies and generates sourcemaps
+lute run install   # installs Lute packages + Wally dependencies and generates sourcemaps
 ```
 
-`lute run install` must succeed before any build — it populates `Packages/` and the Loom store the build scripts require.
+`lute run install` must succeed before any build — it populates `Packages/` and the `.lpm/` folder the build scripts require.
 
 ## 2. Build the example plugin
 

@@ -170,7 +170,9 @@ local function validateParams(
 		if not typeMatches(value, property.type) then
 			table.insert(
 				problems,
-				`param "{name}" must be {withArticle(property.type)}, got {describeActual(value)}{describeProperty(property)}`
+				`param "{name}" must be {withArticle(property.type)}, got {describeActual(value)}{describeProperty(
+					property
+				)}`
 			)
 			continue
 		end

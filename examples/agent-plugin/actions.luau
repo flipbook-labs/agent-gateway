@@ -12,7 +12,7 @@
 	caught by the registry and returned to the caller as `{ ok = false, error = ... }`.
 ]]
 
-local AgentGateway = require("@agentgateway")
+local AgentGateway = require("@agent-gateway")
 local getInstanceFromPath = require("./common/getInstanceFromPath")
 local getInstancePath = require("./common/getInstancePath")
 
