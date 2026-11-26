@@ -8,14 +8,14 @@ With Wally:
 
 ```toml
 [dependencies]
-AgentGateway = "flipbook-labs/agent-gateway@0.2.1"
+AgentGateway = "flipbook-labs/agent-gateway@0.3.0"
 ```
 
 With Lute, add this to `pkg.luau` and run `lute pkg install --vendor`:
 
 ```luau
 ["agent-gateway"] = {
-	rev = "v0.2.1",
+	rev = "v0.3.0",
 	sourceKind = "github",
 	source = "https://github.com/flipbook-labs/agent-gateway",
 },
