@@ -3,9 +3,9 @@
 	AgentGateway.
 
 	When this plugin loads it builds an action registry and a gateway. The
-	gateway is a BindableFunction named "FlipbookAgentGateway" parented to
-	CoreGui. An agent (e.g. via the Studio MCP) discovers and invokes actions by
-	calling:
+	gateway is a BindableFunction named "ExampleAgentGateway" parented to
+	CoreGui, tagged with the "AgentGateway" CollectionService tag. An agent
+	(e.g. via the Studio MCP) discovers and invokes actions by calling:
 
 		gateway:Invoke({ method = "list" })
 		gateway:Invoke({ method = "call", action = "insertPart", params = { name = "Foo" } })
@@ -18,8 +18,11 @@ local Actions = require("@self/actions")
 local AgentGateway = require("@agent-gateway")
 
 local config: AgentGateway.Config = {
-	name = "FlipbookAgentGateway",
-	protocolVersion = 1,
+	name = "ExampleAgentGateway",
+	description = "Example plugin actions for manipulating Instances in the open place.",
+	instructions = "Insert a Part with insertPart, inspect the results with listInstances,"
+		.. " and rename Instances with renameInstance. Instance paths are slash-separated"
+		.. ' from the DataModel root, e.g. "Workspace/AgentPart".',
 }
 
 local context: Actions.Context = {
@@ -33,4 +36,4 @@ local cleanup = AgentGateway.createGateway(registry, config)
 -- BindableFunction (createGateway is also idempotent, but this keeps CoreGui tidy).
 plugin.Unloading:Connect(cleanup)
 
-print(`[FlipbookAgentGateway] ready — {#registry.actions} action(s) registered`)
+print(`[ExampleAgentGateway] ready — {#registry.actions} action(s) registered`)

@@ -1,3 +1,6 @@
+local CollectionService = game:GetService("CollectionService")
+
+local constants = require("@root/constants")
 local types = require("@root/types")
 
 type ActionResult = types.ActionResult
@@ -19,13 +22,23 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 
 	local gateway = Instance.new("BindableFunction")
 	gateway.Name = config.name
-	gateway:SetAttribute("ProtocolVersion", config.protocolVersion)
+
+	-- The tag and attributes make the gateway discoverable and self-describing
+	-- without invoking it: an agent with zero prior knowledge can find every
+	-- gateway via CollectionService:GetTagged(constants.TAG), then read what it
+	-- is and how to talk to it off the instance.
+	CollectionService:AddTag(gateway, constants.TAG)
+	gateway:SetAttribute("ProtocolVersion", constants.PROTOCOL_VERSION)
+	gateway:SetAttribute("Usage", constants.USAGE)
+	if config.description ~= nil then
+		gateway:SetAttribute("Description", config.description)
+	end
 
 	gateway.OnInvoke = function(request: unknown): ActionResult
 		if type(request) ~= "table" then
 			return {
 				ok = false,
-				error = "malformed request: expected a table",
+				error = `malformed request: expected a table, got {type(request)}. {constants.REQUEST_GRAMMAR}`,
 			}
 		end
 
@@ -43,14 +56,15 @@ local function createGateway(registry: Registry, config: Config): () -> ()
 			if type(action) ~= "string" then
 				return {
 					ok = false,
-					error = "malformed request: action must be a string",
+					error = "malformed request: call requires an action name string, got"
+						.. ` {type(action)}. {constants.REQUEST_GRAMMAR}`,
 				}
 			end
 			return registry.dispatch(action, fields.params)
 		else
 			return {
 				ok = false,
-				error = `malformed request: unknown method "{tostring(fields.method)}"`,
+				error = `malformed request: unknown method "{tostring(fields.method)}". {constants.REQUEST_GRAMMAR}`,
 			}
 		end
 	end

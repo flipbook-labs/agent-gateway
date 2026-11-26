@@ -13,7 +13,7 @@ AgentGateway exposes a plugin's actions to in-Studio agents through a single [`B
 
 1. Build and install the example plugin.
 2. Open a place in Studio so the plugin loads.
-3. Find the gateway BindableFunction the plugin created.
+3. Discover the gateway BindableFunction by its CollectionService tag.
 4. Call `list` to discover the available actions.
 5. Decide what to do from there — `call` actions, inspect results, handle errors.
 
@@ -21,11 +21,7 @@ AgentGateway exposes a plugin's actions to in-Studio agents through a single [`B
 
 - [Rokit](https://github.com/rojo-rbx/rokit) (toolchain manager). Everything else — Rojo, Lute, Darklua, etc. — is pinned in `rokit.toml` and installed by Rokit.
 - Roblox Studio.
-- A way to run Luau **inside** Studio. Either:
-  - the **Roblox Studio MCP** server connected to your client (preferred — it exposes a tool that runs Luau in the open place and returns the result), or
-  - the Studio **Command Bar** (View → Command Bar), for running snippets by hand.
-
-  (Last resort, if the MCP can't be attached to your client: drive the `StudioMCP` stdio binary directly with an `execute_luau` call.)
+- A way to run Luau **inside** Studio — see the shared `agent-gateway/use-agent-gateway` skill for Studio MCP setup. The Studio Command Bar (View → Command Bar) works for running snippets by hand.
 
 ## 1. Bootstrap the toolchain
 
@@ -66,28 +62,35 @@ lute run build-example --output ~/Documents/Roblox/Plugins/AgentPlugin.rbxm
 Then open Roblox Studio with any place (a Baseplate is fine). On load you should see this in the Output window:
 
 ```
-[FlipbookAgentGateway] ready — 3 action(s) registered
+[ExampleAgentGateway] ready — 3 action(s) registered
 ```
 
 That line means the plugin ran and the gateway exists. If you don't see it, the plugin didn't load — re-check the install path and that the place is open.
 
-## 4. Locate the gateway
+## 4. Discover the gateway
 
-The plugin creates a `BindableFunction` named **`FlipbookAgentGateway`** under `CoreGui` (the default parent). Confirm it exists by running this Luau in Studio (via the Studio MCP run-code tool, or the Command Bar):
+Every gateway BindableFunction carries the `AgentGateway` CollectionService tag, so this one convention finds them all — no plugin-specific names or locations needed. Run this Luau in Studio (via the Studio MCP run-code tool, or the Command Bar):
 
 ```lua
-local gateway = game:GetService("CoreGui"):FindFirstChild("FlipbookAgentGateway")
-print(gateway, gateway and gateway:GetAttribute("ProtocolVersion"))
+local CollectionService = game:GetService("CollectionService")
+
+for _, gateway in CollectionService:GetTagged("AgentGateway") do
+	print(
+		gateway:GetFullName(),
+		gateway:GetAttribute("ProtocolVersion"),
+		gateway:GetAttribute("Description")
+	)
+end
 ```
 
-You should get a `BindableFunction` and a `ProtocolVersion` of `1`. This is the only object an agent needs — everything goes through `gateway:Invoke(request)`.
+You should see a `BindableFunction` named **`ExampleAgentGateway`** under `CoreGui`, with a `ProtocolVersion` of `2` and the example plugin's description. The instance also carries a `Usage` attribute with a one-line protocol summary. Other plugins' gateways are listed too when they're installed. This is the only object an agent needs — everything goes through `gateway:Invoke(request)`.
 
 ## 5. Discover actions with `list`
 
-Invoke the gateway with the `list` method to get the manifest of available actions:
+Invoke the gateway with the `list` method to get the manifest — the gateway's identity, agent instructions, and available actions:
 
 ```lua
-local gateway = game:GetService("CoreGui").FlipbookAgentGateway
+local gateway = game:GetService("CoreGui").ExampleAgentGateway
 local response = gateway:Invoke({ method = "list" })
 print(response)
 ```
@@ -98,7 +101,10 @@ print(response)
 {
     ok = true,
     result = {
-        protocolVersion = 1,
+        protocolVersion = 2,
+        name = "ExampleAgentGateway",
+        description = "Example plugin actions for manipulating Instances in the open place.",
+        instructions = "Insert a Part with insertPart, ...",
         actions = {
             { name = "insertPart",     title = "Insert Part",     description = "...", inputSchema = {...} },
             { name = "listInstances",  title = "List Instances",  description = "...", inputSchema = {...} },
@@ -113,7 +119,7 @@ print(response)
 Invoke an action with the `call` method, passing `action` and (optionally) `params`:
 
 ```lua
-local gateway = game:GetService("CoreGui").FlipbookAgentGateway
+local gateway = game:GetService("CoreGui").ExampleAgentGateway
 
 -- Insert a Part
 gateway:Invoke({ method = "call", action = "insertPart", params = { name = "AgentBox" } })
@@ -134,8 +140,12 @@ From here, behave like the agent: read each `result`, pick the next action from 
 
 - **Success path:** `insertPart` creates a Part you can see in the Explorer.
 - **Error path:** a bad path returns `{ ok = false, error = "no instance at path: ..." }` rather than throwing — e.g. `gateway:Invoke({ method = "call", action = "renameInstance", params = { path = "Workspace/Nope", name = "x" } })`.
-- **Unknown action:** calling a name that isn't registered, `gateway:Invoke({ method = "call", action = "nope" })`, returns `{ ok = false, error = "unknown action: nope" }`.
-- **Malformed request:** `gateway:Invoke({})` returns `{ ok = false, error = 'malformed request: unknown method "nil"' }`.
+- **Unknown action:** calling a name that isn't registered, `gateway:Invoke({ method = "call", action = "nope" })`, returns `ok = false` with an error that lists the available actions.
+- **Params validation:** the registry validates params against each action's `inputSchema` before the action runs. All of these return `ok = false` with an error that quotes the schema:
+  - missing required param: `gateway:Invoke({ method = "call", action = "renameInstance", params = { path = "Workspace/Nope" } })` → `invalid params for renameInstance: missing required param "name" (string) — New name`
+  - wrong type: `params = { path = 5, name = "x" }` → `... param "path" must be a string, got number ...`
+  - unknown param (typo): `params = { path = "Workspace/X", name = "y", nmae = "z" }` → `... unknown param "nmae" — valid params: name, path`
+- **Malformed request:** `gateway:Invoke({})` returns `ok = false` with an error that teaches the request grammar (`Expected {method = "list"} ... or {method = "call", action = "<actionName>", params = {...}} ...`).
 
 ## Request / response reference
 
@@ -145,8 +155,10 @@ Request shape (`GatewayRequest`):
 | -------- | -------------------- | ----------- |
 | `method` | `"list"` \| `"call"` | always      |
 | `action` | `string`             | `call` only |
-| `params` | `any?`               | `call` only |
+| `params` | `table?`             | `call` only |
 
 Response shape (`ActionResult`): `{ ok: boolean, result: any?, error: string? }`.
 
-The library API the example uses (`createActionRegistry`, `createGateway`, and the types) is in `src/` and re-exported from `src/init.luau`.
+Action results must be JSON-encodable; the registry converts non-encodable results (Instances, mixed-key tables) into an `ok = false` error blaming the action.
+
+The library API the example uses (`createActionRegistry`, `createGateway`, the `TAG`/`PROTOCOL_VERSION` constants, and the types) is in `src/` and re-exported from `src/init.luau`.

@@ -32,7 +32,8 @@ type Context = { plugin: Plugin }
 
 local config: AgentGateway.Config = {
 	name = "MyPluginGateway",
-	protocolVersion = 1,
+	description = "Actions for driving MyPlugin.",
+	instructions = "Call insertPart to add a Part to the Workspace.",
 }
 
 local context: Context = { plugin = plugin }
@@ -57,10 +58,17 @@ local cleanup = AgentGateway.createGateway(registry, config)
 plugin.Unloading:Connect(cleanup)
 ```
 
-An agent then calls the gateway, which the plugin parents to `CoreGui` by default:
+Every gateway has the `AgentGateway` tag, wherever its plugin parented it, and is named after its config. Several plugins can have one, so an agent picks the gateway it wants by name and calls it:
 
 ```luau
-local gateway = game:GetService("CoreGui").MyPluginGateway
+local CollectionService = game:GetService("CollectionService")
+
+local gateway
+for _, tagged in CollectionService:GetTagged("AgentGateway") do
+	if tagged.Name == "MyPluginGateway" then
+		gateway = tagged
+	end
+end
 
 gateway:Invoke({ method = "list" })
 gateway:Invoke({ method = "call", action = "insertPart" })
@@ -70,9 +78,9 @@ For a complete plugin, see [`examples/agent-plugin`](examples/agent-plugin).
 
 ## Actions
 
-An action takes a `name`, a `title`, a `description`, an optional `inputSchema`, and a `run` function. `run` receives the context you passed to `createActionRegistry` and the `params` the caller sent, which is `nil` when the caller sent none. Its return value becomes the `result`.
+An action takes a `name`, a `title`, a `description`, an optional `inputSchema`, and a `run` function. `run` receives the context you passed to `createActionRegistry` and the `params` the caller sent, which is an empty table when the caller sent none. Its return value becomes the `result`, and it must be JSON-encodable.
 
-`inputSchema` describes the `params` an action takes, using JSON Schema's `type` and `properties` fields. Agents read it from the manifest, but AgentGateway does not validate `params` against it, so `run` should check them:
+`inputSchema` describes the `params` an action takes, using JSON Schema's `type`, `properties`, and `required` fields, plus `enum` on a property. Agents read it from the manifest, and AgentGateway checks `params` against it before `run`. Anything the schema can't express, such as a path that must resolve, is up to `run`:
 
 ```luau
 inputSchema = {
@@ -80,6 +88,7 @@ inputSchema = {
 	properties = {
 		name = { type = "string", description = "Name for the new Part" },
 	},
+	required = { "name" },
 },
 ```
 
@@ -89,10 +98,10 @@ Names must be non-empty and unique, or `createActionRegistry` raises an error. A
 
 The gateway accepts two methods:
 
-- `list` returns `{ ok = true, result = manifest }`. The manifest holds `protocolVersion` and each action's `name`, `title`, `description`, and `inputSchema`. It leaves out `run`.
-- `call` takes an `action` name and optional `params`. It returns `{ ok = true, result = ... }` on success, or `{ ok = false, error = ... }` for an unknown action, a non-string action name, an unknown method, or an error thrown from `run`.
+- `list` returns `{ ok = true, result = manifest }`. The manifest holds `protocolVersion`, the config's `name`, `description`, and `instructions`, and each action's `name`, `title`, `description`, and `inputSchema`. It leaves out `run`.
+- `call` takes an `action` name and optional `params`. It returns `{ ok = true, result = ... }` on success, or `{ ok = false, error = ... }` for an unknown action, a non-string action name, an unknown method, `params` that don't match the schema, a result that isn't JSON-encodable, or an error thrown from `run`. The error says how to fix the call.
 
-`protocolVersion` comes from the config. The gateway also sets it as a `ProtocolVersion` attribute on the `BindableFunction`.
+Every gateway's `BindableFunction` has the `AgentGateway` tag and carries `ProtocolVersion`, `Usage`, and, when the config has one, `Description` attributes. AgentGateway sets the protocol version and exports it with the tag as `PROTOCOL_VERSION` and `TAG`. Use the config's `instructions` to tell agents what to call first and what to wait for.
 
 Set `parent` in the config to place the gateway somewhere other than `CoreGui`. Creating a gateway with a name that already exists under the same parent replaces the old one. The function returned by `createGateway` destroys the gateway.
 

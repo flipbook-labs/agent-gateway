@@ -1,5 +1,8 @@
+local CollectionService = game:GetService("CollectionService")
+
 local JestGlobals = require("@pkg/JestGlobals")
 
+local constants = require("@root/constants")
 local createActionRegistry = require("@root/createActionRegistry")
 local createGateway = require("@root/createGateway")
 
@@ -10,8 +13,16 @@ local it = JestGlobals.it
 
 type Context = {}
 
-local function makeRegistry(actions: { any }?)
-	return createActionRegistry({ name = "TestGateway", protocolVersion = 1 }, {} :: Context, actions or {})
+local function makeRegistry(actions: { any }?, configOverrides: { [string]: any }?)
+	local config = {
+		name = "TestGateway",
+	}
+	if configOverrides then
+		for k, v in configOverrides do
+			(config :: any)[k] = v
+		end
+	end
+	return createActionRegistry(config, {} :: Context, actions or {})
 end
 
 local function invoke(parent: Instance, name: string, request: any): any
@@ -35,10 +46,9 @@ describe("createGateway", function()
 
 	local function setup(actions: { any }?, configOverrides: { [string]: any }?)
 		parent = Instance.new("Folder")
-		local registry = makeRegistry(actions)
+		local registry = makeRegistry(actions, configOverrides)
 		local config = {
 			name = "TestGateway",
-			protocolVersion = 1,
 			parent = parent,
 		}
 		if configOverrides then
@@ -58,11 +68,20 @@ describe("createGateway", function()
 		expect((bf :: Instance).ClassName).toBe("BindableFunction")
 	end)
 
-	it("sets the ProtocolVersion attribute", function()
-		setup(nil, { protocolVersion = 7 })
+	it("tags the gateway for discovery", function()
+		setup()
 
 		local bf = parent:FindFirstChild("TestGateway") :: Instance
-		expect(bf:GetAttribute("ProtocolVersion")).toBe(7)
+		expect(CollectionService:HasTag(bf, constants.TAG)).toBe(true)
+	end)
+
+	it("sets self-describing attributes", function()
+		setup(nil, { description = "A test gateway" })
+
+		local bf = parent:FindFirstChild("TestGateway") :: Instance
+		expect(bf:GetAttribute("ProtocolVersion")).toBe(constants.PROTOCOL_VERSION)
+		expect(bf:GetAttribute("Description")).toBe("A test gateway")
+		expect(bf:GetAttribute("Usage")).toBe(constants.USAGE)
 	end)
 
 	it("list returns all registered actions", function()
@@ -93,6 +112,21 @@ describe("createGateway", function()
 		expect(#result.result.actions).toBe(2)
 	end)
 
+	it("list includes the gateway identity and instructions", function()
+		setup(nil, {
+			description = "A test gateway",
+			instructions = "Do the test things.",
+		})
+
+		local result = invoke(parent, "TestGateway", { method = "list" })
+
+		expect(result.ok).toBe(true)
+		expect(result.result.protocolVersion).toBe(constants.PROTOCOL_VERSION)
+		expect(result.result.name).toBe("TestGateway")
+		expect(result.result.description).toBe("A test gateway")
+		expect(result.result.instructions).toBe("Do the test things.")
+	end)
+
 	it("call dispatches an action", function()
 		setup({
 			{
@@ -112,31 +146,45 @@ describe("createGateway", function()
 		expect(result.result).toBe("pong")
 	end)
 
-	it("returns an error for a non-table request", function()
+	it("teaches the request grammar on a non-table request", function()
 		setup()
 
 		local result = invoke(parent, "TestGateway", "not a table")
 
 		expect(result.ok).toBe(false)
 		expect(result.error).toContain("malformed request")
+		expect(result.error).toContain('{method = "list"}')
+		expect(result.error).toContain('{method = "call", action = "<actionName>", params = {...}}')
 	end)
 
-	it("returns an error for an unknown method", function()
+	it("teaches the request grammar on an unknown method", function()
 		setup()
 
 		local result = invoke(parent, "TestGateway", { method = "execute" })
 
 		expect(result.ok).toBe(false)
-		expect(result.error).toContain("malformed request")
+		expect(result.error).toContain('unknown method "execute"')
+		expect(result.error).toContain('{method = "list"}')
 	end)
 
-	it("returns an error for call without an action name", function()
+	it("teaches the request grammar on an empty request", function()
+		setup()
+
+		local result = invoke(parent, "TestGateway", {})
+
+		expect(result.ok).toBe(false)
+		expect(result.error).toContain('unknown method "nil"')
+		expect(result.error).toContain('{method = "list"}')
+	end)
+
+	it("teaches the request grammar on call without an action name", function()
 		setup()
 
 		local result = invoke(parent, "TestGateway", { method = "call" })
 
 		expect(result.ok).toBe(false)
-		expect(result.error).toContain("malformed request")
+		expect(result.error).toContain("call requires an action name")
+		expect(result.error).toContain('{method = "list"}')
 	end)
 
 	it("is idempotent: replaces an existing gateway with the same name", function()
@@ -146,7 +194,6 @@ describe("createGateway", function()
 
 		cleanup = createGateway(makeRegistry(), {
 			name = "TestGateway",
-			protocolVersion = 2,
 			parent = parent,
 		})
 
@@ -154,7 +201,6 @@ describe("createGateway", function()
 
 		expect(secondBf).never.toBeNil()
 		expect(secondBf).never.toBe(firstBf)
-		expect((secondBf :: Instance):GetAttribute("ProtocolVersion")).toBe(2)
 	end)
 
 	it("cleanup removes the gateway from the parent", function()

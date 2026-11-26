@@ -5,13 +5,14 @@
 	the manifest (returned by the gateway's `list` method) and can be invoked by
 	an agent.
 
-	`params` crosses the BindableFunction boundary, so it arrives as `unknown` and
-	each action narrows it defensively. Errors thrown from `run` are caught by the
-	registry and returned to the caller as `{ ok = false, error = ... }`.
+	By the time `run` is called the registry has already validated `params`
+	against `inputSchema` (required params present, declared types match, no
+	unknown params), so actions only enforce what the schema can't express —
+	like non-empty strings and paths that resolve. Errors thrown from `run` are
+	caught by the registry and returned to the caller as `{ ok = false, error = ... }`.
 ]]
 
 local AgentGateway = require("@agent-gateway")
-local asTable = require("./common/asTable")
 local getInstanceFromPath = require("./common/getInstanceFromPath")
 local getInstancePath = require("./common/getInstancePath")
 
@@ -33,11 +34,10 @@ local function create(_context: Context): { Action }
 				type = "object",
 				properties = {
 					name = { type = "string", description = "Name for the new Part (default: AgentPart)" },
-				} :: { [string]: unknown },
+				},
 			},
 			run = function(_ctx, params)
-				local options = asTable(params)
-				local name = options.name
+				local name = params.name
 
 				local part = Instance.new("Part")
 				part.Name = if type(name) == "string" and name ~= "" then name else "AgentPart"
@@ -56,11 +56,10 @@ local function create(_context: Context): { Action }
 				type = "object",
 				properties = {
 					path = { type = "string", description = 'Slash-separated path, e.g. "Workspace/Model"' },
-				} :: { [string]: unknown },
+				},
 			},
 			run = function(_ctx, params)
-				local options = asTable(params)
-				local targetPath = options.path
+				local targetPath = params.path
 
 				local target: Instance?
 				if type(targetPath) == "string" and targetPath ~= "" then
@@ -92,18 +91,17 @@ local function create(_context: Context): { Action }
 				properties = {
 					path = { type = "string", description = "Slash-separated path to the instance" },
 					name = { type = "string", description = "New name" },
-				} :: { [string]: unknown },
+				},
 				required = { "path", "name" },
 			},
 			run = function(_ctx, params)
-				local options = asTable(params)
-				local targetPath = options.path
-				local name = options.name
+				local targetPath = params.path :: string
+				local name = params.name :: string
 
-				if type(targetPath) ~= "string" or targetPath == "" then
+				if targetPath == "" then
 					error("renameInstance requires a non-empty string 'path'")
 				end
-				if type(name) ~= "string" or name == "" then
+				if name == "" then
 					error("renameInstance requires a non-empty string 'name'")
 				end
 
