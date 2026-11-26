@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.3.0
+
+Features 1 · Internal 2
+
+### Features
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-gateway-dark.svg" /><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-gateway-light.svg" /><img src="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-gateway-light.png" alt="Gateway" height="18" align="texttop" /></picture> Tag gateways so agents can find them, describe the protocol on them, and check params and results. ([#13](https://github.com/flipbook-labs/agent-gateway/pull/13))
+
+### Internal
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-docs-dark.svg" /><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-docs-light.svg" /><img src="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-docs-light.png" alt="Docs" height="18" align="texttop" /></picture> Rewrite the README around install and usage, and move dev setup into CONTRIBUTING.md. ([#27](https://github.com/flipbook-labs/agent-gateway/pull/27))
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-tooling-dark.svg" /><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-tooling-light.svg" /><img src="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-tooling-light.png" alt="Tooling" height="18" align="texttop" /></picture> Move to Changewrite v0.16.0, AgentSkills v0.9.0, and Jest v3.21.0 from Roblox's `roblox/*` Wally packages. ([#27](https://github.com/flipbook-labs/agent-gateway/pull/27))
 
 ## v0.2.1
 
