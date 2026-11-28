@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.3.1
+
+Internal 1
+
+### Internal
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-release-dark.svg" /><source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-release-light.svg" /><img src="https://raw.githubusercontent.com/flipbook-labs/agent-gateway/main/.changes/assets/kind-release-light.png" alt="Release" height="18" align="texttop" /></picture> Record each Wally publish as a deployment to the `wally` environment. ([#28](https://github.com/flipbook-labs/agent-gateway/pull/28))
+
 ## v0.3.0
 
 Features 1 · Internal 2
